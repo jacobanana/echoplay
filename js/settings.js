@@ -2,7 +2,7 @@
 
 let jamSettings = {
   local: {
-    maestro: isElectron(),
+    maestro: true,
     rootOctave: 3,
     octaveRange: 2
   }
