@@ -7,14 +7,17 @@ var path = require('path')
 let port = process.env.PORT || 3000
 let hostname = require('os').hostname().toLowerCase()
 let url = "http://"+hostname+":"+port
+let rootPath = global.appRoot || __dirname
 
 console.log("join the jam @ "+url)
 
+/*
 var QRCode = require('qrcode')
 QRCode.toString(url, function (err, string) {
   if (err) throw err
   console.log(string)
 })
+*/
 
 // Express
 server.listen(port);
@@ -23,11 +26,11 @@ app.get('/', function (req, res) {
 });
 app.use('/js', express.static(path.join(__dirname, 'js')))
 app.use('/css', express.static(path.join(__dirname, 'css')))
-app.use('/js/jquery', express.static(path.join(__dirname, 'node_modules', 'jquery', 'dist')))
-app.use('/js/pep', express.static(path.join(__dirname, 'node_modules', 'pepjs', 'dist')))
-app.use('/js/tone', express.static(path.join(__dirname, 'node_modules', 'tone', 'build')))
-app.use('/js/mousetrap', express.static(path.join(__dirname, 'node_modules', 'mousetrap')))
-app.use('/js/qrcode', express.static(path.join(__dirname, 'node_modules', 'qrcode', 'build')))
+app.use('/js/jquery', express.static(path.join(rootPath, 'node_modules', 'jquery', 'dist')))
+app.use('/js/pep', express.static(path.join(rootPath, 'node_modules', 'pepjs', 'dist')))
+app.use('/js/tone', express.static(path.join(rootPath, 'node_modules', 'tone', 'build')))
+app.use('/js/mousetrap', express.static(path.join(rootPath, 'node_modules', 'mousetrap')))
+app.use('/js/qrcode', express.static(path.join(rootPath, 'node_modules', 'qrcode', 'build')))
 
 
 let jamSettings = {
