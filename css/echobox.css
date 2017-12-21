@@ -1,0 +1,176 @@
+@import url('https://fonts.googleapis.com/css?family=Cuprum|Lato:300,900');
+
+* {
+   cursor: default;
+}
+
+body {
+  overflow: hidden;
+  position: relative;
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome and Opera */
+  margin: 0;
+  padding: 0;
+  background: rgba(0,0,0,0);
+  font-family: 'Cuprum', sans-serif;
+}
+
+html {
+  margin: 0px !important;
+  overflow: hidden;
+}
+
+h1 {
+  font-weight: 300;
+  margin: 0 0 5px 0;
+}
+
+strong {
+  font-weight: 900;
+}
+
+canvas {
+  margin: 0;
+  padding: 0;
+  height: 55px !important;
+  width: 55px !important;
+}
+
+p {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+#main{
+  height: 100vh;
+  width: 100vw;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: flex-start; /* align items in Main Axis */
+  align-items: stretch; /* align items in Cross Axis */
+  align-content: stretch; /* Extra space in Cross Axis */
+}
+
+#interface{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 1);
+}
+
+#header{
+  font-family: 'Lato', sans-serif;
+  background-color: rgba(0, 0, 0, 1);
+  color: rgba(255, 255, 255, 1);
+  padding: 0 5px;
+  -webkit-app-region: drag;
+  display: flex;
+  height: 60px;
+}
+
+#header > div {
+  justify-content: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+#jam {
+  font-size: 0.8em;
+  align-items: center;
+}
+
+#jam > p{
+  margin-bottom: 5px;
+}
+
+#app-title {
+  align-items: flex-end;
+}
+
+#settings{
+  color: rgba(255, 255, 255, 1);
+  margin: 0.2em 2em;
+}
+
+.block{
+  display: flex;
+  flex-wrap: wrap-reverse;
+  flex-direction: row;
+  align-items: stretch;
+  align-content: stretch;
+  justify-content: flex-start;
+  flex: 1;
+  background: rgba(255, 255, 255, 1);
+}
+
+.pad {
+  display: flex;
+  flex-direction: column;
+  flex: calc(50% - 4px);
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  opacity: 0.75;
+  border: 2px #000000 solid;
+}
+
+.pad-note{
+  display: flex;
+  font-size: 3em;
+  font-weight: bold;
+  flex-grow: 10;
+  align-items: center;
+}
+
+.mini-pad{
+  background-color: rgba(0,0,0,1);
+  width: 100%;
+  height: 10px;
+  margin-bottom: 3px;
+  opacity: 0;
+}
+
+@media (max-width: 320px), (max-height: 400px){
+  * {
+    font-size: 100%;
+  }
+  #header{
+    min-height: 50px;
+  }
+  #code #qrcode{
+    display: none;
+  }
+  #jam {
+    align-items: flex-start;
+  }
+}
+
+
+@media (min-width: 576px){
+  .pad{
+    flex: calc(25% - 4px);
+  }
+}
+
+@media (min-width: 992px){
+  .pad{
+    flex: calc(12.5% - 4px);
+  }
+}
+
+.o-1{ opacity: 1; }
+.o-075{ opacity: 0.75; }
+.o-05{ opacity: 0.5; }
+.o-025{ opacity: 0.25; }
+.hidden{ visibility: hidden; }
+.visible{ visibility: visible; }

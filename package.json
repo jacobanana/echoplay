@@ -1,9 +1,41 @@
 {
-  "name": "Node-Webiste-EB-Sample-App",
-  "version": "0.0.1",
-  "private": true,
-  "dependencies": {},
+  "name": "echobox-electron",
+  "version": "1.0.0",
+  "description": "EchoBox Electron application",
+  "main": "main.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://www.github.com/jacobanana/echoplay"
+  },
+  "keywords": [
+    "echobox",
+    "music",
+    "learning"
+  ],
+  "author": "Adrien Fauconnet",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.2",
+    "http": "0.0.0",
+    "jquery": "^3.2.1",
+    "mousetrap": "^1.6.1",
+    "pepjs": "^0.4.3",
+    "qrcode": "^1.0.0",
+    "socket.io": "^2.0.4",
+    "tone": "^0.11.11"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "electron": "^1.7.9",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.0",
+    "gulp-bundle-assets": "^2.29.0",
+    "gulp-minify": "^2.1.0",
+    "lazypipe": "^1.0.1"
   }
 }

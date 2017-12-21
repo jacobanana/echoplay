@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>EchoPlay Experiments!</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="css/echobox.css"/>
+  </head>
+  <body>
+    <script src="js/jquery/jquery.min.js"></script>
+    <script src="js/pep/pep.min.js"></script>
+
+    <div id="main">
+      <div id="header">
+        <div id="code"><canvas id="qrcode"></canvas></div>
+        <div id="jam">
+          <p>join the jam @</p>
+          <p><strong id="url"></strong></p>
+        </div>
+        <div id="app-title">
+          <h1>echo<strong>play</strong></h1>
+        </div>
+      </div>
+      <div id="interface">
+      </div>
+    </div>
+
+    <script>
+    var socket, Tone
+    function isElectron() {
+      return (typeof process !== "undefined") && process.versions && (process.versions.electron !== undefined)
+    }
+
+    if (isElectron()){
+      window.$ = window.jQuery = require('jquery');
+    }
+
+    $(window).on("load", function() {
+      $.getScript("js/mousetrap/mousetrap.min.js")
+       .then(() => { return $.getScript("js/mousetrap/plugins/bind-dictionary/mousetrap-bind-dictionary.min.js") })
+       .then(() => { return $.getScript("js/vendor/startaudiocontext.js") })
+       .then(() => { return $.getScript("socket.io/socket.io.js") })
+       .then(() => { return $.getScript("js/qrcode/qrcode.min.js") })
+       .then(() => {
+         socket = io.connect()
+         socket.on("url", function(url){
+          QRCode.toCanvas(document.getElementById('qrcode'), url, {scale: 2, color: {light: "#000000ff", dark: "#ffffffff"}}, function (error) {
+            if (error) console.error(error)
+            $("#url").text(url)
+          })
+         })
+
+         if (isElectron() == true){
+           Tone = require("tone");
+         } else {
+           return $.getScript("js/tone/Tone.min.js")
+         }
+        })
+       .then(() => { return $.getScript("js/mobile.js") })
+       .then(() => { return $.getScript("js/note.js") })
+       .then(() => { return $.getScript("js/synth.js") })
+       .then(() => { return $.getScript("js/settings.js") })
+       .then(() => { return $.getScript("js/interface.js") })
+       .then(() => {
+         $("h1").click(function(){ toggleFullScreen() })
+         socket.on("new_jam", function(jam){
+           jamSettings.global = jam
+           buildInterface(jamSettings)
+         })
+         socket.on("share_locals", function(localSettings){
+           jamSettings.local = localSettings
+           buildInterface(jamSettings)
+         })
+         socket.emit("request_jam")
+       }).then(() =>{
+         bindSocketsToInterface()
+       })
+    })
+    </script>
+
+  </body>
+</html>
