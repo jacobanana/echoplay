@@ -6,18 +6,10 @@ var path = require('path')
 
 let port = process.env.PORT || 3000
 let hostname = require('os').hostname().toLowerCase()
-let url = "http://"+hostname+":"+port
+let url = global.appUrl || "http://"+hostname+":"+port
 let rootPath = global.appRoot || __dirname
 
 console.log("join the jam @ "+url)
-
-/*
-var QRCode = require('qrcode')
-QRCode.toString(url, function (err, string) {
-  if (err) throw err
-  console.log(string)
-})
-*/
 
 // Express
 server.listen(port);
