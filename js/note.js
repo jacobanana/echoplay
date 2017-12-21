@@ -133,10 +133,10 @@ SCALES.major = {definition: [0,2,4,5,7,9,11], rootRepeat: true}
 SCALES.minor = {definition: [0,2,3,5,7,8,10], rootRepeat: true}
 SCALES.minor_harmonic = {definition: [0,2,3,5,7,8,11], rootRepeat: true}
 SCALES.gipsy = {definition: [0,2,3,6,7,8,11], rootRepeat: true}
-SCALES.pentatonic = {definition: [0,2,5,7,9], rootRepeat: true}
+SCALES.pentatonic = {definition: [0,2,5,7,9], rootRepeat: false}
 SCALES.minor_melodic_asc = {definition: [0,2,3,5,7,9,11], rootRepeat: true}
 SCALES.minor_melodic_desc = {definition: [0,2,3,5,7,8,10], rootRepeat: true}
-SCALES.octatonic = {definition: [0,1,3,4,6,7,9,10], rootRepeat: true}
+SCALES.octatonic = {definition: [0,1,3,4,6,7,9,10], rootRepeat: false}
 SCALES.chromatic = {definition: [0,1,2,3,4,5,6,7,8,9,10,11], rootRepeat: false}
 
 

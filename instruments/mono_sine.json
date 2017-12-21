@@ -1,0 +1,15 @@
+{
+  "instance": "Tone.Synth",
+  "polyphony": 1,
+  "options": {
+    "oscillator": {
+      "type"    : "sine"
+    },
+    "envelope"  : {
+      "attack"  : 0.05,
+      "decay"   : 0.2,
+      "sustain" : 0.8,
+      "release" : 0.1
+    }
+  }
+}

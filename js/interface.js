@@ -24,7 +24,7 @@ function buildInterface(jam){
           )
         )
     })
-    synth.triggerRelease()
+    instrument.triggerRelease()
     bindInterface()
     socket.emit("get_players")
 }
@@ -54,27 +54,20 @@ function removeAllPlayers(){
 /* LOCAL PLAYER INTERACTION */
 
 function bindInterface(){
-  let triggeredNotes = 0
-
-  function noteOn(note, trigger = true){
-    if (triggeredNotes > 0 || trigger === true){
-      synth.triggerAttack(note);
-      socket.emit("note_on", note)
-      $("[note='"+note+"']").addClass("o-1")
-    }
-    if (trigger === true) {
-      triggeredNotes += 1
-    }
+  function noteOn(note, trigger = true, retrigger = false){
+    if (instrument.triggeredNotes > 0 || trigger === true) $("[note='"+note+"']").addClass("o-1")
+    instrument.triggerAttack(note, trigger, retrigger);
+    console.log("ON", instrument.triggeredNotes)
   }
 
   function noteOff(note){
-    triggeredNotes -= 1
-    if (triggeredNotes <= 0) {
-      synth.triggerRelease()
-      triggeredNotes = 0;
-    }
-    socket.emit("note_off", note)
+    instrument.triggerRelease(note)
     $("[note='"+note+"']").removeClass("o-1")
+    console.log("OFF", instrument.triggeredNotes)
+  }
+
+  function noteLeave(note){
+    instrument.noteLeave(note)
   }
 
 
@@ -85,19 +78,17 @@ function bindInterface(){
     noteOff($(this).attr("note"))
   })
 
-  $("[trigger=true]").on('pointerenter', function(){ noteOn($(this).attr("note"), false) })
+  $("[trigger=true]").on('pointerenter', function(){ noteOn($(this).attr("note"), false, true) })
 
   $("[trigger=true]").on('pointerleave', function(){
     let note = $(this).attr("note")
+    noteLeave(note)
     $("[note='"+note+"']").removeClass("o-1")
-    socket.emit("note_off", $(this).attr("note"))
   })
 
   // Safety all note off when releasing the pointer on the header bar
   $("#header").on('pointerup', function(){
-    triggeredNotes = 0
-    synth.triggerRelease()
-    socket.emit("all_note_off")
+    instrument.releaseAll()
     $("[trigger=true]").removeClass("o-1")
   })
 
@@ -119,7 +110,7 @@ function bindSocketsToInterface(){
   socket.on("note_off", function(data){
     $("[note='"+data.note+"'] > [client_id="+data.id+"]").removeClass("o-1")
   })
-  socket.on("all_note_off", function(data){
+  socket.on("release_all", function(data){
     $("[trigger=true] > [client_id="+data.id+"]").removeClass("o-1")
   })
 

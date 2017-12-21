@@ -13,17 +13,15 @@ console.log("join the jam @ "+url)
 
 // Express
 server.listen(port);
-app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/index.html');
-});
-app.use('/js', express.static(path.join(__dirname, 'js')))
-app.use('/css', express.static(path.join(__dirname, 'css')))
-app.use('/js/jquery', express.static(path.join(rootPath, 'node_modules', 'jquery', 'dist')))
-app.use('/js/pep', express.static(path.join(rootPath, 'node_modules', 'pepjs', 'dist')))
-app.use('/js/tone', express.static(path.join(rootPath, 'node_modules', 'tone', 'build')))
-app.use('/js/mousetrap', express.static(path.join(rootPath, 'node_modules', 'mousetrap')))
-app.use('/js/qrcode', express.static(path.join(rootPath, 'node_modules', 'qrcode', 'build')))
-
+app.get('/', (req, res) => { res.sendFile(__dirname + '/index.html') })
+app.use('/js',          express.static(path.join(__dirname, 'js')))
+app.use('/css',         express.static(path.join(__dirname, 'css')))
+app.use('/instruments', express.static(path.join(__dirname, 'instruments')))
+app.use('/js/jquery',   express.static(path.join(rootPath, 'node_modules', 'jquery', 'dist')))
+app.use('/js/pep',      express.static(path.join(rootPath, 'node_modules', 'pepjs', 'dist')))
+app.use('/js/tone',     express.static(path.join(rootPath, 'node_modules', 'tone', 'build')))
+app.use('/js/mousetrap',express.static(path.join(rootPath, 'node_modules', 'mousetrap')))
+app.use('/js/qrcode',   express.static(path.join(rootPath, 'node_modules', 'qrcode', 'build')))
 
 let jamSettings = {
   rootNote: ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][Math.floor(Math.random() * 12)],
@@ -69,8 +67,8 @@ io.on('connection', function (socket) {
     socket.broadcast.emit('note_off', {note, id: socket.id})
   });
 
-  socket.on('all_note_off', function(){
-    socket.broadcast.emit('all_note_off', socket.id)
+  socket.on('release_all', function(){
+    socket.broadcast.emit('release_all', socket.id)
   });
 
   socket.on('show_note_names', function(show){
