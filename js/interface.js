@@ -55,15 +55,17 @@ function removeAllPlayers(){
 
 function bindInterface(){
   function noteOn(note, trigger = true, retrigger = false){
-    if (instrument.triggeredNotes > 0 || trigger === true) $("[note='"+note+"']").addClass("o-1")
-    instrument.triggerAttack(note, trigger, retrigger);
-    console.log("ON", instrument.triggeredNotes)
+    if (instrument.triggeredNotes < instrument.polyphony){
+      if (instrument.triggeredNotes > 0 || trigger === true) $("[note='"+note+"']").addClass("o-1")
+      instrument.triggerAttack(note, trigger, retrigger)
+    }
   }
 
   function noteOff(note){
-    instrument.triggerRelease(note)
-    $("[note='"+note+"']").removeClass("o-1")
-    console.log("OFF", instrument.triggeredNotes)
+    if($("[note='"+note+"'] .o-1").length > 0){
+      instrument.triggerRelease(note)
+      $("[note='"+note+"']").removeClass("o-1")      
+    }
   }
 
   function noteLeave(note){

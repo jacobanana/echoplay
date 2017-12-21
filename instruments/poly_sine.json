@@ -1,9 +1,10 @@
 {
-  "polyphony": 4,
+  "polyphony": 6,
   "instance": "Tone.Synth",
   "options": {
+    "volume"    : -12,
     "oscillator": {
-      "type"    : "square"
+      "type"    : "sine"
     },
     "envelope"  : {
       "attack"  : 0.05,

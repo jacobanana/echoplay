@@ -37,9 +37,10 @@ function startInstrument(preset){
     }
     else{
       instrument.inst = new Tone.PolySynth(instrument.polyphony, instrument.instance)
+      instrument.inst.set(instrument.options)
       instrument.triggerAttack = function(note, trigger, retrigger, velocity){
         if (trigger === true || (retrigger === true && instrument.triggeredNotes > 0)){
-          instrument.triggeredNotes += 1
+          if (retrigger !== true) instrument.triggeredNotes += 1
           instrument.inst.triggerAttack(note, velocity)
           socket.emit("note_on", note)
         }
@@ -59,6 +60,14 @@ function startInstrument(preset){
         socket.emit("note_off", note)
       }
     }
+
+    instrument.triggerRoot = function() {
+      instrument.inst.triggerAttackRelease(
+        jamSettings.global.rootNote+(jamSettings.local.rootOctave).toString()
+        , "16n"
+      )
+    }
+
 
     instrument.inst.toMaster()
   })

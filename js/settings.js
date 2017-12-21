@@ -52,10 +52,19 @@ var shortcuts = {
   "alt+e": function() { setRootNote('E') },
   "alt+f": function() { setRootNote('F') },
   "alt+g": function() { setRootNote('G') },
-  "alt+right": function() { setRootNote(SHARPS[(SHARPS.indexOf(jamSettings.global.rootNote)+1)%SHARPS.length]) },
+  "alt+right": function() {
+    if (jamSettings.global.rootNote == 'B'){
+      setRootOctave(jamSettings.local.rootOctave+1)
+    }
+    setRootNote(SHARPS[(SHARPS.indexOf(jamSettings.global.rootNote)+1)%SHARPS.length])
+  },
   "alt+left": function() {
     let nextNote
-    if (jamSettings.global.rootNote == 'C'){ nextNote = 'B'}
+
+    if (jamSettings.global.rootNote == 'C'){
+      setRootOctave(jamSettings.local.rootOctave-1)
+      nextNote = 'B'
+    }
     else{ nextNote = SHARPS[(SHARPS.indexOf(jamSettings.global.rootNote)-1)%SHARPS.length] }
     setRootNote(nextNote)
   },
@@ -109,10 +118,11 @@ Mousetrap.bind(shortcuts)
 
 /* LOCAL SETTINGS */
 
-function setRootOctave(rootOctave, share=false){
+function setRootOctave(rootOctave, share=false, mute=false){
   jamSettings.local.rootOctave = rootOctave
   buildInterface(jamSettings)
   if (share === true && jamSettings.local.maestro === true) socket.emit("share_locals", jamSettings.local)
+  instrument.triggerRoot(mute)
 }
 
 function setOctaveRange(octaveRange, share=false){
@@ -126,10 +136,11 @@ function setOctaveRange(octaveRange, share=false){
 
 /* GLOBAL SETTINGS */
 
-function setRootNote(rootNote){
+function setRootNote(rootNote, mute = false){
   if (NOTE_NAMES.indexOf(rootNote)==-1 || jamSettings.local.maestro !== true) return
   jamSettings.global.rootNote = rootNote
   socket.emit("update_jam", jamSettings.global)
+  instrument.triggerRoot(mute)
 }
 
 function setScale(scaleName){
