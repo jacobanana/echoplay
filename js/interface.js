@@ -94,9 +94,11 @@ function bindSocketsToInterface(){
   // Receives note data from other players
   socket.on("note_on", function(data){
     $("[note='"+data.note+"'] > [client_id="+data.id+"]").addClass("o-1")
+    if (jamSettings.local.playRemote == true) instrument.inst.triggerAttack(data.note)
   })
   socket.on("note_off", function(data){
     $("[note='"+data.note+"'] > [client_id="+data.id+"]").removeClass("o-1")
+    if (jamSettings.local.playRemote == true) instrument.inst.triggerRelease(data.note)
   })
   socket.on("release_all", function(data){
     $("[trigger=true] > [client_id="+data.id+"]").removeClass("o-1")

@@ -9,6 +9,7 @@ let jamSettings = {
     rootOctave: 3,
     octaveRange: 2,
     instrument: "poly_sine",
+    playRemote: false,
   }
 }
 loadInstrument(jamSettings.local.instrument)
