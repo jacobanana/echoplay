@@ -23,7 +23,7 @@ When another player joins the jam, his notes will be displayed in real time on t
 | `alt` + `right` | set 1 semitone higher |
 | `alt` + `r` -> `k` | set random root note |
 
-### Set scale
+### Set scale
 | Shortcut | Action |
 | -------- | ------ |
 | `alt` + `0` | Set to *chromatic* scale |
@@ -37,7 +37,6 @@ When another player joins the jam, his notes will be displayed in real time on t
 | `alt` + `8` | Set to *octatonic* scale |
 | `alt` + `r` -> `s` | Set to a random scale |
 
-
 ### Octave Ranges
 | Shortcut | Action |
 | -------- | ------ |
@@ -46,8 +45,13 @@ When another player joins the jam, his notes will be displayed in real time on t
 | `alt` + `up` | shift octave up (applies globally) |
 | `alt` + `down` | shift octave down (applies globally) |
 
+### Instrument & Sound
+| Shortcut | Action |
+| -------- | ------ |
+| `cmd` + `.` | Volume up |
+| `cmd` + `,` | Volume down |
 
-### Interface / Display
+### Interface & Display
 | Shortcut | Action |
 | -------- | ------ |
 | `alt` + `n` | display note names |
@@ -57,11 +61,3 @@ When another player joins the jam, his notes will be displayed in real time on t
 | `alt` + `shift` + `up` | add 1 octave to the range of the interface (applies globally) |
 | `alt` + `shift` + `down` | remove 1 octave to the range of the interface (applies globally) |
 | `F1` | show full screen |
-
-
-### Instrument & Sound
-| Shortcut | Action |
-| -------- | ------ |
-| `cmd` + `.` | Volume up |
-| `cmd` + `,` | Volume down |
-
