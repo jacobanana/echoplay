@@ -173,3 +173,12 @@ function toggleFullScreen() {
     cancelFullScreen.call(doc);
   }
 }
+
+/* COMPUTER KEYBOARD TRIGGER */
+
+const KEYS_PAD = [
+  "z", "x", "c", "v", "b", "n", "m", ",",
+  "a", "s", "d", "f", "g", "h", "j", "k",
+  "w", "e", "r", "t", "y", "u", "i", "o",
+  "2", "3", "4", "5", "6", "7", "8", "9"
+]

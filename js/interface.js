@@ -75,6 +75,11 @@ function bindInterface(){
     $("[trigger=true]").removeClass("o-1")
   })
 
+  KEYS_PAD.forEach(key => {
+    Mousetrap.unbind(key, 'keydown')
+    Mousetrap.unbind(key, 'keyup')
+  })
+
   $("[trigger=true]").each(function(note) {
     Mousetrap.bind(KEYS_PAD[note], (event) => {
       if (event.repeat == false) noteOn($(this).attr('note'))
@@ -113,15 +118,7 @@ function bindSocketsToInterface(){
   socket.on("disconnect", function(){ removeAllPlayers() })
 }
 
-
-/* COMPUTER KEYBOARD TRIGGER */
-
-const KEYS_PAD = [
-  "z", "x", "c", "v", "b", "n", "m", ",",
-  "a", "s", "d", "f", "g", "h", "j", "k",
-  "w", "e", "r", "t", "y", "u", "i", "o",
-  "2", "3", "4", "5", "6", "7", "8", "9"
-]
+/* Instrument triggers */
 
 function noteOn(note, trigger = true, retrigger = false, velocity = 1){
   if (instrument.polyphony == 1 || instrument.triggeredNotes < instrument.polyphony){
