@@ -8,7 +8,7 @@ let jamSettings = {
     maestro: true,
     rootOctave: 3,
     octaveRange: 2,
-    instrument: "mono_square",
+    instrument: "poly_sine",
   }
 }
 loadInstrument(jamSettings.local.instrument)
@@ -112,6 +112,8 @@ var shortcuts = {
   "alt+n": function() { if(jamSettings.local.maestro) socket.emit("show_note_names", true) },
   "alt+shift+n": function() { if(jamSettings.local.maestro) socket.emit("show_note_names", false) },
   "f1": function() { toggleFullScreen() },
+  "mod+.": function() { volumeUp() },
+  "mod+,": function() { volumeDown() },
 }
 
 if (isElectron()){

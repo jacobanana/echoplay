@@ -61,6 +61,7 @@
        .then(() => { return $.getScript("js/instrument.js") })
        .then(() => { return $.getScript("js/settings.js") })
        .then(() => { return $.getScript("js/interface.js") })
+       .then(() => { return $.getScript("js/midi.js") })
        .then(() => {
          $("h1").click(function(){ toggleFullScreen() })
          socket.on("new_jam", function(jam){

@@ -1,0 +1,31 @@
+{
+  "instance": "Tone.MonoSynth",
+  "polyphony": 1,
+  "options": {
+    "volume": -12,
+    "frequency": "C4",
+    "detune": 0,
+    "oscillator": {
+      "type": "square"
+    },
+    "filter": {
+      "Q": 3,
+      "type": "lowpass",
+      "rolloff": -24
+    },
+    "envelope": {
+      "attack": 0.005,
+      "decay": 0.1,
+      "sustain": 0.9,
+      "release": 3
+    },
+    "filterEnvelope": {
+      "attack": 0.2,
+      "decay": 0.1,
+      "sustain": 0.25,
+      "release": 2,
+      "baseFrequency": 150,
+      "octaves": 7,
+      "exponent": 2
+    }
+  }}

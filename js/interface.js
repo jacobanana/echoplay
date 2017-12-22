@@ -54,25 +54,6 @@ function removeAllPlayers(){
 /* LOCAL PLAYER INTERACTION */
 
 function bindInterface(){
-  function noteOn(note, trigger = true, retrigger = false){
-    if (instrument.polyphony == 1 || instrument.triggeredNotes < instrument.polyphony){
-      if (instrument.triggeredNotes > 0 || trigger === true) $("[note='"+note+"']").addClass("o-1")
-      instrument.triggerAttack(note, trigger, retrigger)
-    }
-  }
-
-  function noteOff(note){
-    if($("[note='"+note+"'] .o-1").length > 0){
-      instrument.triggerRelease(note)
-      $("[note='"+note+"']").removeClass("o-1")
-    }
-  }
-
-  function noteLeave(note){
-    instrument.noteLeave(note)
-  }
-
-
   $("[trigger=true]").on('pointerdown', function(){
     noteOn($(this).attr("note"))
   })
@@ -128,6 +109,8 @@ function bindSocketsToInterface(){
   socket.on("add_player", function(player){ addPlayer(player) })
   // A player has left the jam
   socket.on("remove_player", function(player){ removePlayer(player) })
+  // Server has dropped..
+  socket.on("disconnect", function(){ removeAllPlayers() })
 }
 
 
@@ -139,3 +122,21 @@ const KEYS_PAD = [
   "w", "e", "r", "t", "y", "u", "i", "o",
   "2", "3", "4", "5", "6", "7", "8", "9"
 ]
+
+function noteOn(note, trigger = true, retrigger = false, velocity = 1){
+  if (instrument.polyphony == 1 || instrument.triggeredNotes < instrument.polyphony){
+    if (instrument.triggeredNotes > 0 || trigger === true) $("[note='"+note+"']").addClass("o-1")
+    instrument.triggerAttack(note, trigger, retrigger, velocity)
+  }
+}
+
+function noteOff(note, force = false){
+  if($("[note='"+note+"'] .o-1").length > 0 || force == true){
+    instrument.triggerRelease(note)
+    $("[note='"+note+"']").removeClass("o-1")
+  }
+}
+
+function noteLeave(note){
+  instrument.noteLeave(note)
+}

@@ -9,7 +9,7 @@ function loadInstrument(preset){
       instrument.inst = new instrument.instance(instrument.options)
       instrument.triggerAttack = function(note, trigger, retrigger, velocity){
         if (instrument.triggeredNotes > 0 || trigger === true){
-          instrument.inst.triggerAttack(note, velocity)
+          instrument.inst.triggerAttack(note, 0, velocity)
           socket.emit("note_on", note)
         }
         if (trigger === true) instrument.triggeredNotes += 1
@@ -37,7 +37,7 @@ function loadInstrument(preset){
       instrument.triggerAttack = function(note, trigger, retrigger, velocity){
         if (trigger === true || (retrigger === true && instrument.triggeredNotes > 0)){
           if (retrigger !== true) instrument.triggeredNotes += 1
-          instrument.inst.triggerAttack(note, velocity)
+          instrument.inst.triggerAttack(note, null, velocity)
           socket.emit("note_on", note)
         }
       }
@@ -63,8 +63,22 @@ function loadInstrument(preset){
         , "16n"
       )
     }
-
-
     instrument.inst.toMaster()
   })
+}
+
+
+function setVolume(volume){
+  if (typeof(volume)!="number" || volume > 0) return
+  instrument.inst.set({volume})
+}
+
+function volumeUp(){
+  console.log("up")
+  setVolume(instrument.inst.volume.value + 1)
+}
+
+function volumeDown(){
+  console.log("down")
+  setVolume(instrument.inst.volume.value - 1)
 }

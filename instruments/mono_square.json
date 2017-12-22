@@ -2,6 +2,7 @@
   "instance": "Tone.Synth",
   "polyphony": 1,
   "options": {
+    "volume"    : -12,
     "oscillator": {
       "type"    : "square"
     },
