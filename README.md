@@ -2,23 +2,22 @@
 EchoPlay Node.js web messaging server
 
 ## What is echo*play*?
-EchoPlay is a simple application to help children learn music and play together. 
+EchoPlay is a simple application to help children learn music and play together.
 The server provides access to a "pad" like interface which can be set to a specific scale.
 Notes can be triggered by pressing on the colored pads (using a mouse or on a touchscreen), by using the computer keyboard or with a MIDI controller.
 When another player joins the jam, his notes will be displayed in real time on the other jammers' interface.
 
 ## Keyboard shortcuts
-
 ### Set root note
 | Shortcut | Action |
 | -------- | ------ |
-| `alt` + `a`  | set to A | 
-| `alt` + `b`  | set to B | 
-| `alt` + `c`  | set to C | 
-| `alt` + `d`  | set to D | 
-| `alt` + `e`  | set to E | 
-| `alt` + `f`  | set to F | 
-| `alt` + `g`  | set to G | 
+| `alt` + `a`  | set to A |
+| `alt` + `b`  | set to B |
+| `alt` + `c`  | set to C |
+| `alt` + `d`  | set to D |
+| `alt` + `e`  | set to E |
+| `alt` + `f`  | set to F |
+| `alt` + `g`  | set to G |
 | `alt` + `left` | set 1 semitone lower |
 | `alt` + `right` | set 1 semitone higher |
 | `alt` + `r` -> `k` | set random root note |
@@ -61,3 +60,9 @@ When another player joins the jam, his notes will be displayed in real time on t
 | `alt` + `shift` + `up` | add 1 octave to the range of the interface (applies globally) |
 | `alt` + `shift` + `down` | remove 1 octave to the range of the interface (applies globally) |
 | `F1` | show full screen |
+
+## Usage
+1. Pull repository locally
+2. Install dependencies with `npm install`
+3. Run the server with `npm start`
+4. Open a web browser to the URL displayed in the terminal or (http://localhost:3000)
