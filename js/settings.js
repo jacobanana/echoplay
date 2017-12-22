@@ -1,12 +1,17 @@
+/* Fastest latency on non mobile devices */
+if (!isMobile()) Tone.context.latencyHint = "fastest";
+
 /* Initial local jam settings */
 
 let jamSettings = {
   local: {
     maestro: true,
     rootOctave: 3,
-    octaveRange: 2
+    octaveRange: 2,
+    instrument: "mono_square",
   }
 }
+loadInstrument(jamSettings.local.instrument)
 
 /* Colors */
 

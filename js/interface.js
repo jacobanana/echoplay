@@ -55,7 +55,7 @@ function removeAllPlayers(){
 
 function bindInterface(){
   function noteOn(note, trigger = true, retrigger = false){
-    if (instrument.triggeredNotes < instrument.polyphony){
+    if (instrument.polyphony == 1 || instrument.triggeredNotes < instrument.polyphony){
       if (instrument.triggeredNotes > 0 || trigger === true) $("[note='"+note+"']").addClass("o-1")
       instrument.triggerAttack(note, trigger, retrigger)
     }
@@ -64,7 +64,7 @@ function bindInterface(){
   function noteOff(note){
     if($("[note='"+note+"'] .o-1").length > 0){
       instrument.triggerRelease(note)
-      $("[note='"+note+"']").removeClass("o-1")      
+      $("[note='"+note+"']").removeClass("o-1")
     }
   }
 

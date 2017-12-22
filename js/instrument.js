@@ -1,9 +1,5 @@
-// Set to fastest latency setting
-if (!isMobile()) Tone.context.latencyHint = "fastest";
-
 var instrument, instrumentData
-//create a synth and connect it to the master output (your speakers)
-function startInstrument(preset){
+function loadInstrument(preset){
   $.getJSON('/instruments/'+preset+'.json', (data) => {
     instrument = data
     instrument.instance = eval(data.instance)
@@ -72,5 +68,3 @@ function startInstrument(preset){
     instrument.inst.toMaster()
   })
 }
-
-startInstrument('poly')
