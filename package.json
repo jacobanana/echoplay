@@ -2,7 +2,7 @@
   "name": "echoplay-server",
   "version": "1.0.0",
   "description": "EchoPlay messaging server",
-  "main": "server.js",
+  "main": "EchoPlayServer.js",
   "scripts": {
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
