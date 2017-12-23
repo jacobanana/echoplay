@@ -6,7 +6,7 @@ var path = require('path')
 
 let port = process.env.PORT || 3000
 let hostname = require('os').hostname().toLowerCase()
-let url = global.appUrl || "http://"+hostname+":"+port
+let url = process.env.URL || "http://"+hostname+":"+port
 let rootPath = global.appRoot || __dirname
 
 console.log("join the jam @ "+url)
