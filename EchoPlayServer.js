@@ -5,18 +5,19 @@ var io = require('socket.io')(server);
 var path = require('path')
 
 class EchoPlayServer{
-  constructor(appRoot, appUrl, port) {
+  constructor(appRoot, port, appUrl) {
     this.appRoot = appRoot || __dirname
     this.port = port || 3000
     this.hostname = require('os').hostname().toLowerCase()
     this.url = appUrl || "http://"+this.hostname+":"+this.port
     this.defaultJamSettings()
     this.defaultEndpoints()
+    this.start()
   }
 
   start(){
-    server.listen(this.port)
     this.serveStatic()
+    server.listen(this.port)
     this.setupSocket()
     console.log("join the jam @ "+this.url)
   }
@@ -35,7 +36,6 @@ class EchoPlayServer{
   }
 
   defaultJamSettings(){
-    console.log("default settings")
     this.jamSettings = {
       rootNote: ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][Math.floor(Math.random() * 12)],
       scale: ["major", "minor", "minor_harmonic", "gipsy"][Math.floor(Math.random() * 4)],
@@ -71,7 +71,6 @@ class EchoPlayServer{
       })
 
       socket.on("request_jam", () => {
-        console.log(this.jamSettings)
         socket.emit("new_jam", this.jamSettings)
       })
 
@@ -86,21 +85,21 @@ class EchoPlayServer{
 
       socket.on('note_on', (note) => {
         socket.broadcast.emit('note_on', {note, id: socket.id})
-      });
+      })
 
       socket.on('note_off', (note) => {
         socket.broadcast.emit('note_off', {note, id: socket.id})
-      });
+      })
 
       socket.on('release_all', () => {
         socket.broadcast.emit('release_all', socket.id)
-      });
+      })
 
       socket.on('show_note_names', (show) => {
         this.jamSettings.showNotes = show
         io.emit('new_jam', this.jamSettings)
       })
-    });
+    })
   }
 }
 

@@ -50,7 +50,7 @@ let colorPalette = makeColorPalette(0.52, 128, 127, 12)
 
 /* KEYBOARD SHORTCUTS */
 
-var shortcuts = {
+const MAESTRO_SHORTCUTS = {
   "alt+a": function() { setRootNote('A') },
   "alt+b": function() { setRootNote('B') },
   "alt+c": function() { setRootNote('C') },
@@ -75,12 +75,8 @@ var shortcuts = {
     setRootNote(nextNote)
   },
   "alt+r k": function() { setRootNote(SHARPS[Math.floor(Math.random() * 12)]) }, // random root note
-  "meta+up": function() { setRootOctave(jamSettings.local.rootOctave+1) },
-  "meta+down": function() { setRootOctave(jamSettings.local.rootOctave-1) },
   "alt+up": function() { setRootOctave(jamSettings.local.rootOctave+1, true) },
   "alt+down": function() { setRootOctave(jamSettings.local.rootOctave-1, true) },
-  "meta+shift+up": function() { setOctaveRange(jamSettings.local.octaveRange+1) },
-  "meta+shift+down": function() { setOctaveRange(jamSettings.local.octaveRange-1) },
   "alt+shift+up": function() { setOctaveRange(jamSettings.local.octaveRange+1, true) },
   "alt+shift+down": function() { setOctaveRange(jamSettings.local.octaveRange-1, true) },
   "alt+shift+right": function() {
@@ -112,17 +108,27 @@ var shortcuts = {
   "alt+8": function() { setScale("octatonic") },
   "alt+n": function() { if(jamSettings.local.maestro) socket.emit("show_note_names", true) },
   "alt+shift+n": function() { if(jamSettings.local.maestro) socket.emit("show_note_names", false) },
-  "f1": function() { toggleFullScreen() },
+}
+
+const LOCAL_SHORTCUTS = {
+  "meta+up": function() { setRootOctave(jamSettings.local.rootOctave+1) },
+  "meta+down": function() { setRootOctave(jamSettings.local.rootOctave-1) },
+  "meta+shift+up": function() { setOctaveRange(jamSettings.local.octaveRange+1) },
+  "meta+shift+down": function() { setOctaveRange(jamSettings.local.octaveRange-1) },
   "mod+.": function() { volumeUp() },
   "mod+,": function() { volumeDown() },
+  "mod+p": function() { jamSettings.local.playRemote = true },
+  "mod+shift+p": function() { jamSettings.local.playRemote = false },
+  "f1": function() { toggleFullScreen() },
 }
 
 if (isElectron()){
   const { remote } = require('electron');
-  shortcuts["f12"] = function() { remote.getCurrentWindow().toggleDevTools() }
+  Mousetrap.bind("f12", () => { remote.getCurrentWindow().toggleDevTools() })
 }
 
-Mousetrap.bind(shortcuts)
+Mousetrap.bind(LOCAL_SHORTCUTS)
+if (jamSettings.local.maestro === true) Mousetrap.bind(MAESTRO_SHORTCUTS)
 
 /* LOCAL SETTINGS */
 
