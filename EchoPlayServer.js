@@ -3,6 +3,7 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var path = require('path')
+var bonjour = require('bonjour')()
 
 class EchoPlayServer{
   constructor(appRoot, port, appUrl) {
@@ -19,6 +20,7 @@ class EchoPlayServer{
     this.serveStatic()
     server.listen(this.port)
     this.setupSocket()
+    this.publishBonjour()
     console.log("join the jam @ "+this.url)
   }
 
@@ -100,6 +102,10 @@ class EchoPlayServer{
         io.emit('new_jam', this.jamSettings)
       })
     })
+  }
+
+  publishBonjour(){
+    bonjour.publish({ name: 'EchoPlayServer', type: 'echoplay', port: this.port })
   }
 }
 

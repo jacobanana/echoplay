@@ -4,11 +4,11 @@
     <title>EchoPlay Experiments!</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="/css/echoplay.css"/>
+    <link rel="stylesheet" href="css/echoplay.css"/>
   </head>
   <body>
-    <script src="/js/jquery/jquery.min.js"></script>
-    <script src="/js/pep/pep.min.js"></script>
+    <script src="js/jquery/jquery.min.js"></script>
+    <script src="js/pep/pep.min.js"></script>
 
     <div id="main">
       <div id="header">
@@ -36,11 +36,11 @@
     }
 
     $(window).on("load", function() {
-      $.getScript("/js/mousetrap/mousetrap.min.js")
-       .then(() => { return $.getScript("/js/mousetrap/plugins/bind-dictionary/mousetrap-bind-dictionary.min.js") })
-       .then(() => { return $.getScript("/js/vendor/startaudiocontext.js") })
-       .then(() => { return $.getScript("/socket.io/socket.io.js") })
-       .then(() => { return $.getScript("/js/qrcode/qrcode.min.js") })
+      $.getScript("js/mousetrap/mousetrap.min.js")
+       .then(() => { return $.getScript("js/mousetrap/plugins/bind-dictionary/mousetrap-bind-dictionary.min.js") })
+       .then(() => { return $.getScript("js/vendor/startaudiocontext.js") })
+       .then(() => { return $.getScript("socket.io/socket.io.js") })
+       .then(() => { return $.getScript("js/qrcode/qrcode.min.js") })
        .then(() => {
          socket = io.connect()
          socket.on("url", function(url){
@@ -54,15 +54,15 @@
          if (isElectron() == true){
            Tone = require("tone");
          } else {
-           return $.getScript("/js/tone/Tone.min.js")
+           return $.getScript("js/tone/Tone.min.js")
          }
         })
-       .then(() => { return $.getScript("/js/mobile.js") })
-       .then(() => { return $.getScript("/js/note.js") })
-       .then(() => { return $.getScript("/js/instrument.js") })
-       .then(() => { return $.getScript("/js/settings.js") })
-       .then(() => { return $.getScript("/js/interface.js") })
-       .then(() => { return $.getScript("/js/midi.js") })
+       .then(() => { return $.getScript("js/mobile.js") })
+       .then(() => { return $.getScript("js/note.js") })
+       .then(() => { return $.getScript("js/instrument.js") })
+       .then(() => { return $.getScript("js/settings.js") })
+       .then(() => { return $.getScript("js/interface.js") })
+       .then(() => { return $.getScript("js/midi.js") })
        .then(() => {
          $("h1").click(function(){ toggleFullScreen() })
          socket.on("new_jam", function(jam){

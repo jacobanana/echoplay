@@ -1,6 +1,6 @@
 var instrument, instrumentData
 function loadInstrument(preset){
-  $.getJSON('/instruments/'+preset+'.json', (data) => {
+  $.getJSON('instruments/'+preset+'.json', (data) => {
     instrument = data
     instrument.instance = eval(data.instance)
     instrument.triggeredNotes = 0
@@ -74,11 +74,9 @@ function setVolume(volume){
 }
 
 function volumeUp(){
-  console.log("up")
   setVolume(instrument.inst.volume.value + 1)
 }
 
 function volumeDown(){
-  console.log("down")
   setVolume(instrument.inst.volume.value - 1)
 }
