@@ -57,13 +57,14 @@ class EchoPlayServer{
   setupSocket(){
     // Socket.io
     io.on('connection', (socket) => {
+      console.log("New connection:", socket.id)
       io.emit('url', this.url)
 
       socket.on('get_players', () => {
         io.clients((error, clients) => {
           if (error) throw error;
           socket.emit('players', clients);
-          console.log(clients);
+          console.log("Current clients:", clients);
         })
       })
 

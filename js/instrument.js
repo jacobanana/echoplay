@@ -41,15 +41,16 @@ class Instrument{
       if (this.polyphony == 1){
         if (this.triggeredNotes > 0 || trigger === true){
           this.inst.triggerAttack(note, null, velocity)
+          socket.emit("note_on", note)
         }
         if (trigger === true) this.triggeredNotes += 1
       } else {
         if (trigger === true || (retrigger === true && this.triggeredNotes > 0)){
           if (retrigger !== true) this.triggeredNotes += 1
           this.inst.triggerAttack(note, null, velocity)
+          socket.emit("note_on", note)
         }
       }
-      socket.emit("note_on", note)
     }
   }
 

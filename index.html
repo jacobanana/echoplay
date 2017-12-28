@@ -75,6 +75,9 @@
            pads.setupJam(jamSettings)
          })
          socket.emit("request_jam")
+       }).then(() =>{
+         pads.bindSockets()
+         socket.emit("get_players")
        })
     })
     </script>

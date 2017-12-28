@@ -2,8 +2,7 @@
 
 class PadsInterface{
   constructor(parent, jam, socket){
-    this.socket = socket
-    this.id = "#"+this.socket.id
+    this.id = "#"+socket.id
     this.parent = parent || "#interface"
     this.remoteInstruments = new Object()
     this.setPalette()
@@ -13,7 +12,6 @@ class PadsInterface{
   buildAndBindAll(){
     this.build()
     this.bindMouseAndTouch()
-    this.bindSockets()
     this.bindKeyboard()
   }
 
@@ -75,7 +73,7 @@ class PadsInterface{
   }
 
   build(){
-    $(this.parent).html($("<div/>").addClass("block").attr({id: this.socket.id}))
+    $(this.parent).html($("<div/>").addClass("block").attr({id: socket.id}))
     this.scaleIntervals.forEach((interval, index) => {
       let noteOctave = this.jam.local.rootOctave + parseInt((interval + NoteInterval(this.jam.global.rootNote))/12)
       let noteNumber = (interval + NoteInterval(this.jam.global.rootNote)) % 12
@@ -118,26 +116,26 @@ class PadsInterface{
 
   /* REMOVE ALL OTHER PLAYERS */
   removeAllPlayers(){
-    $(this.id+" .mini-pad").each(() => {
-      delete this.remoteInstrument[$(this).attr('client_id')]
-      $(this).remove()
+    $(this.id+" .mini-pad").each((event) => {
+      delete this.remoteInstruments[$(event.target).attr('client_id')]
+      $(event.target).remove()
     })
   }
 
   bindMouseAndTouch(){
     $(this.id+" [trigger=true]").on('pointerdown', (event) => {
-      this.noteOn($(event.target).attr("note"))
+      this.noteOn($(event.currentTarget).attr("note"))
     })
     $(this.id+" [trigger=true]").on('pointerup', (event) => {
-      this.noteOff($(event.target).attr("note"))
+      this.noteOff($(event.currentTarget).attr("note"))
     })
 
     $(this.id+" [trigger=true]").on('pointerenter', (event) => {
-      this.noteOn($(event.target).attr("note"), false, true)
+      this.noteOn($(event.currentTarget).attr("note"), false, true)
     })
 
     $(this.id+" [trigger=true]").on('pointerleave', (event) => {
-      let note = $(event.target).attr("note")
+      let note = $(event.currentTarget).attr("note")
       this.noteLeave(note)
       $(this.id+" [note='"+note+"']").removeClass("o-1")
     })
@@ -154,32 +152,32 @@ class PadsInterface{
 
   bindSockets(){
     // Receives note data from other players
-    this.socket.on("note_on", data => {
+    socket.on("note_on", data => {
       $(this.id+" [note='"+data.note+"'] > [client_id="+data.id+"]").addClass("o-1")
       if (this.jam.local.playRemote == true) this.remoteInstruments[data.id].inst.triggerAttack(data.note)
     })
-    this.socket.on("note_off", data => {
+    socket.on("note_off", data => {
       $(this.id+" [note='"+data.note+"'] > [client_id="+data.id+"]").removeClass("o-1")
       if (this.jam.local.playRemote == true) this.remoteInstruments[data.id].inst.triggerRelease(data.note)
     })
-    this.socket.on("release_all", data => {
+    socket.on("release_all", data => {
       $(this.id+" [trigger=true] > [client_id="+data.id+"]").removeClass("o-1")
     })
 
     // Refresh the full list of players
-    this.socket.on("players", clients => {
-      removeAllPlayers()
+    socket.on("players", clients => {
+      this.removeAllPlayers()
       clients.forEach(client => {
         if (client != this.id) this.addPlayer(client)
       })
     })
 
     // Add a new player to the jam
-    this.socket.on("add_player", player => { this.addPlayer(player) })
+    socket.on("add_player", player => { this.addPlayer(player) })
     // A player has left the jam
-    this.socket.on("remove_player", player => { this.removePlayer(player) })
+    socket.on("remove_player", player => { this.removePlayer(player) })
     // Server has dropped..
-    this.socket.on("disconnect", () => { this.removeAllPlayers() })
+    socket.on("disconnect", () => { this.removeAllPlayers() })
   }
 
   /* LOCAL PLAYER INTERACTION */
