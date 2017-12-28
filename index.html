@@ -26,7 +26,7 @@
     </div>
 
     <script>
-    var socket, Tone
+    var socket, Tone, pads
     function isElectron() {
       return (typeof process !== "undefined") && process.versions && (process.versions.electron !== undefined)
     }
@@ -64,18 +64,17 @@
        .then(() => { return $.getScript("js/interface.js") })
        .then(() => { return $.getScript("js/midi.js") })
        .then(() => {
+         pads = new PadsInterface("#interface", null, socket)
          $("h1").click(function(){ toggleFullScreen() })
          socket.on("new_jam", function(jam){
            jamSettings.global = jam
-           buildInterface(jamSettings)
+           pads.setupJam(jamSettings)
          })
          socket.on("share_locals", function(localSettings){
            jamSettings.local = localSettings
-           buildInterface(jamSettings)
+           pads.setupJam(jamSettings)
          })
          socket.emit("request_jam")
-       }).then(() =>{
-         bindSocketsToInterface()
        })
     })
     </script>

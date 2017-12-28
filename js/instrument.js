@@ -19,7 +19,7 @@ class Instrument{
   }
 
   setup(){
-    if (this.monophonic == true) this.inst = new instrument.instance(instrument.options)
+    if (this.monophonic == true) this.inst = new this.instance(this.options)
     else{
       this.inst = new Tone.PolySynth(this.polyphony, this.instance)
       this.inst.set(this.options)
@@ -40,7 +40,7 @@ class Instrument{
     if (this.inst){
       if (this.polyphony == 1){
         if (this.triggeredNotes > 0 || trigger === true){
-          this.inst.triggerAttack(note, 0, velocity)
+          this.inst.triggerAttack(note, null, velocity)
         }
         if (trigger === true) this.triggeredNotes += 1
       } else {

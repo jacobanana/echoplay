@@ -12,8 +12,6 @@ let jamSettings = {
     playRemote: true,
   }
 }
-let instrument = new Object()
-instrument[socket.id] = new Instrument(jamSettings.local.instrumentPreset)
 
 /* Colors */
 
@@ -45,9 +43,6 @@ function makeColorPalette(frequency,
   }
   return palette
 }
-
-// Default color palette (12 colors)
-let colorPalette = makeColorPalette(0.52, 128, 127, 12)
 
 /* KEYBOARD SHORTCUTS */
 
@@ -135,9 +130,9 @@ if (jamSettings.local.maestro === true) Mousetrap.bind(MAESTRO_SHORTCUTS)
 
 function setRootOctave(rootOctave, share=false, mute=false){
   jamSettings.local.rootOctave = rootOctave
-  buildInterface(jamSettings)
+  pads.setupJam(jamSettings)
   if (share === true && jamSettings.local.maestro === true) socket.emit("share_locals", jamSettings.local)
-  instrument[socket.id].triggerRoot()
+  pads.instrument.triggerRoot()
 }
 
 function setOctaveRange(octaveRange, share=false){
@@ -145,7 +140,7 @@ function setOctaveRange(octaveRange, share=false){
   if (octaveRange < 1) octaveRange = 1
   else if (octaveRange > 10) octaveRange = 10
   jamSettings.local.octaveRange = octaveRange
-  buildInterface(jamSettings)
+  pads.setupJam(jamSettings)
   if (share === true && jamSettings.local.maestro === true) socket.emit("share_locals", jamSettings.local)
 }
 
@@ -155,13 +150,13 @@ function setRootNote(rootNote, mute = false){
   if (NOTE_NAMES.indexOf(rootNote)==-1 || jamSettings.local.maestro !== true) return
   jamSettings.global.rootNote = rootNote
   socket.emit("update_jam", jamSettings.global)
-  instrument[socket.id].triggerRoot()
+  pads.instrument.triggerRoot()
 }
 
 function setScale(scaleName){
   if (Object.keys(SCALES).indexOf(scaleName) == -1 || jamSettings.local.maestro !== true) return
   jamSettings.global.scale = scaleName
-  buildInterface(jamSettings)
+  pads.setupJam(jamSettings)
   socket.emit("update_jam", jamSettings.global)
 }
 
