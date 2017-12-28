@@ -1,7 +1,6 @@
 /* Scaled PAD like interface */
 
 function buildInterface(jam){
-  instrument[socket.id] = new Instrument(jam.local.instrumentPreset)
   let scaleIntervals = buildScale(jam.global.scale, jam.local.octaveRange)
   $("#interface").html($("<div></div>").addClass("block"))
   scaleIntervals.forEach((interval, index) => {
@@ -51,7 +50,10 @@ function removePlayer(id){
 /* REMOVE ALL OTHER PLAYERS */
 
 function removeAllPlayers(){
-  $(".mini-pad").remove()
+  $(".mini-pad").each(function() {
+    delete instrument[$(this).attr('client_id')]
+    $(this).remove()
+  })
 }
 
 /* LOCAL PLAYER INTERACTION */

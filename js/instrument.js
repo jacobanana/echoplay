@@ -28,10 +28,12 @@ class Instrument{
   }
 
   triggerRoot(){
-    this.inst.triggerAttackRelease(
-      jamSettings.global.rootNote+(jamSettings.local.rootOctave).toString()
-      , "16n"
-    )
+    if (this.inst){
+      this.inst.triggerAttackRelease(
+        jamSettings.global.rootNote+(jamSettings.local.rootOctave).toString()
+        , "16n"
+      )
+    }
   }
 
   triggerAttack(note, trigger, retrigger, velocity){

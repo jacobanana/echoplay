@@ -13,6 +13,7 @@ let jamSettings = {
   }
 }
 let instrument = new Object()
+instrument[socket.id] = new Instrument(jamSettings.local.instrumentPreset)
 
 /* Colors */
 
@@ -136,7 +137,7 @@ function setRootOctave(rootOctave, share=false, mute=false){
   jamSettings.local.rootOctave = rootOctave
   buildInterface(jamSettings)
   if (share === true && jamSettings.local.maestro === true) socket.emit("share_locals", jamSettings.local)
-  instrument.triggerRoot(mute)
+  instrument[socket.id].triggerRoot()
 }
 
 function setOctaveRange(octaveRange, share=false){
@@ -154,7 +155,7 @@ function setRootNote(rootNote, mute = false){
   if (NOTE_NAMES.indexOf(rootNote)==-1 || jamSettings.local.maestro !== true) return
   jamSettings.global.rootNote = rootNote
   socket.emit("update_jam", jamSettings.global)
-  instrument.triggerRoot(mute)
+  instrument[socket.id].triggerRoot()
 }
 
 function setScale(scaleName){
