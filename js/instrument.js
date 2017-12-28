@@ -35,41 +35,49 @@ class Instrument{
   }
 
   triggerAttack(note, trigger, retrigger, velocity){
-    if (this.polyphony == 1){
-      if (this.triggeredNotes > 0 || trigger === true){
-        this.inst.triggerAttack(note, 0, velocity)
+    if (this.inst){
+      if (this.polyphony == 1){
+        if (this.triggeredNotes > 0 || trigger === true){
+          this.inst.triggerAttack(note, 0, velocity)
+        }
+        if (trigger === true) this.triggeredNotes += 1
+      } else {
+        if (trigger === true || (retrigger === true && this.triggeredNotes > 0)){
+          if (retrigger !== true) this.triggeredNotes += 1
+          this.inst.triggerAttack(note, null, velocity)
+        }
       }
-      if (trigger === true) this.triggeredNotes += 1
-    } else {
-      if (trigger === true || (retrigger === true && this.triggeredNotes > 0)){
-        if (retrigger !== true) this.triggeredNotes += 1
-        this.inst.triggerAttack(note, null, velocity)
-      }
+      socket.emit("note_on", note)
     }
-    socket.emit("note_on", note)
   }
 
   triggerRelease(note){
-    if (this.monophonic == true){
-      if (this.triggeredNotes > 0) this.triggeredNotes -= 1
-      if (this.triggeredNotes <= 0) this.inst.triggerRelease()
-    } else {
-      if (this.triggeredNotes > 0) this.triggeredNotes -= 1
-      this.inst.triggerRelease(note)
+    if (this.inst){
+      if (this.monophonic == true){
+        if (this.triggeredNotes > 0) this.triggeredNotes -= 1
+        if (this.triggeredNotes <= 0) this.inst.triggerRelease()
+      } else {
+        if (this.triggeredNotes > 0) this.triggeredNotes -= 1
+        this.inst.triggerRelease(note)
+      }
+      socket.emit("note_off", note)
     }
-    socket.emit("note_off", note)
   }
 
   releaseAll(){
-    if (this.monophonic == true) this.inst.triggerRelease()
-    else this.inst.releaseAll()
-    this.triggeredNotes = 0
-    socket.emit("release_all")
+    if (this.inst){
+      if (this.monophonic == true) this.inst.triggerRelease()
+      else this.inst.releaseAll()
+      this.triggeredNotes = 0
+      socket.emit("release_all")
+    }
   }
 
   noteLeave(note){
-    if (this.monophonic == false) this.inst.triggerRelease(note)
-    socket.emit("note_off", note)
+    if (this.inst){
+      if (this.monophonic == false) this.inst.triggerRelease(note)
+      socket.emit("note_off", note)
+    }
   }
 
   setVolume(volume){

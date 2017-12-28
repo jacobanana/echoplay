@@ -1,0 +1,16 @@
+{
+  "polyphony": 6,
+  "instance": "Tone.Synth",
+  "options": {
+    "volume"    : -12,
+    "oscillator": {
+      "type"    : "square"
+    },
+    "envelope"  : {
+      "attack"  : 0.05,
+      "decay"   : 0.2,
+      "sustain" : 0.8,
+      "release" : 0.25
+    }
+  }
+}

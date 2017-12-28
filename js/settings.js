@@ -8,12 +8,11 @@ let jamSettings = {
     maestro: true,
     rootOctave: 3,
     octaveRange: 2,
-    instrument: "poly_sine",
-    playRemote: false,
+    instrumentPreset: "poly_sine",
+    playRemote: true,
   }
 }
-//loadInstrument(jamSettings.local.instrument)
-instrument = new Instrument(jamSettings.local.instrument)
+let instrument = new Object()
 
 /* Colors */
 
