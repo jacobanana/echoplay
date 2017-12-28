@@ -15,16 +15,14 @@ class Instrument{
       if (this.polyphony == 1) this.monophonic = true
       else this.monophonic = false
       this.options = data.options
-    }).then(() => this.setup())
-  }
-
-  setup(){
-    if (this.monophonic == true) this.inst = new this.instance(this.options)
-    else{
-      this.inst = new Tone.PolySynth(this.polyphony, this.instance)
-      this.inst.set(this.options)
-    }
-    this.inst.toMaster()
+    }).then(() => {
+      if (this.monophonic == true) this.inst = new this.instance(this.options)
+      else{
+        this.inst = new Tone.PolySynth(this.polyphony, this.instance)
+        this.inst.set(this.options)
+      }
+      this.inst.toMaster()
+    })
   }
 
   triggerRoot(){

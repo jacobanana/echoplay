@@ -1,6 +1,5 @@
 /* Scaled PAD like interface */
-
-class PadsInterface{
+class Interface{
   constructor(parent, jam, socket){
     this.id = "#"+socket.id
     this.parent = parent || "#interface"
@@ -72,56 +71,6 @@ class PadsInterface{
     this.instrument.noteLeave(note)
   }
 
-  build(){
-    $(this.parent).html($("<div/>").addClass("block").attr({id: socket.id}))
-    this.scaleIntervals.forEach((interval, index) => {
-      let noteOctave = this.jam.local.rootOctave + parseInt((interval + NoteInterval(this.jam.global.rootNote))/12)
-      let noteNumber = (interval + NoteInterval(this.jam.global.rootNote)) % 12
-      let noteName = NoteIntervalToName(interval, this.jam.global.rootNote) + noteOctave
-      $(this.id).append(
-          $("<div/>")
-            .addClass("pad")
-            .css("background-color", this.colorPalette[noteNumber])
-            .attr({
-                "note": noteName,
-                "trigger": true,
-                "touch-action": "none"
-            })
-            .html(
-              $("<div/>")
-                .text(this.jam.global.showNotes ? noteName : "")
-                .addClass("pad-note")
-                .attr({"note": noteName})
-            )
-          )
-      })
-  }
-
-  /* ADD ANOTHER PLAYER */
-
-  addPlayer(id){
-    $(this.id+" [trigger=true]").append(
-      $("<div/>")
-        .attr({client_id: id})
-        .addClass("mini-pad")
-    )
-    this.remoteInstruments[id] = new Instrument("poly_square")
-  }
-
-  /* REMOVE ANOTHER PLAYER */
-  removePlayer(id){
-    $(this.id+" [client_id="+id+"]").remove()
-    delete this.remoteInstruments[id]
-  }
-
-  /* REMOVE ALL OTHER PLAYERS */
-  removeAllPlayers(){
-    $(this.id+" .mini-pad").each((event) => {
-      delete this.remoteInstruments[$(event.target).attr('client_id')]
-      $(event.target).remove()
-    })
-  }
-
   bindMouseAndTouch(){
     $(this.id+" [trigger=true]").on('pointerdown', (event) => {
       this.noteOn($(event.currentTarget).attr("note"))
@@ -178,6 +127,66 @@ class PadsInterface{
     socket.on("remove_player", player => { this.removePlayer(player) })
     // Server has dropped..
     socket.on("disconnect", () => { this.removeAllPlayers() })
+  }
+
+  deleteRemoteInstrument(id){
+    delete this.remoteInstruments[id]
+  }
+
+  addRemoteInstrument(id){
+    this.remoteInstruments[id] = new Instrument("poly_square")
+  }
+}
+
+
+class PadsInterface extends Interface{
+  build(){
+    $(this.parent).html($("<div/>").addClass("block").attr({id: socket.id}))
+    this.scaleIntervals.forEach((interval, index) => {
+      let noteOctave = this.jam.local.rootOctave + parseInt((interval + NoteInterval(this.jam.global.rootNote))/12)
+      let noteNumber = (interval + NoteInterval(this.jam.global.rootNote)) % 12
+      let noteName = NoteIntervalToName(interval, this.jam.global.rootNote) + noteOctave
+      $(this.id).append(
+          $("<div/>")
+            .addClass("pad")
+            .css("background-color", this.colorPalette[noteNumber])
+            .attr({
+                "note": noteName,
+                "trigger": true,
+                "touch-action": "none"
+            })
+            .html(
+              $("<div/>")
+                .text(this.jam.global.showNotes ? noteName : "")
+                .addClass("pad-note")
+                .attr({"note": noteName})
+            )
+          )
+      })
+  }
+
+  /* ADD ANOTHER PLAYER */
+  addPlayer(id){
+    $(this.id+" [trigger=true]").append(
+      $("<div/>")
+        .attr({client_id: id})
+        .addClass("mini-pad")
+    )
+    this.addRemoteInstrument(id)
+  }
+
+  /* REMOVE ANOTHER PLAYER */
+  removePlayer(id){
+    $(this.id+" [client_id="+id+"]").remove()
+    this.deleteRemoteInstrument(id)
+  }
+
+  /* REMOVE ALL OTHER PLAYERS */
+  removeAllPlayers(){
+    $(this.id+" .mini-pad").each((event) => {
+      this.deleteRemoteInstrument($(event.target).attr('client_id'))
+      $(event.target).remove()
+    })
   }
 
   /* LOCAL PLAYER INTERACTION */
