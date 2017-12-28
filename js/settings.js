@@ -12,7 +12,8 @@ let jamSettings = {
     playRemote: false,
   }
 }
-loadInstrument(jamSettings.local.instrument)
+//loadInstrument(jamSettings.local.instrument)
+instrument = new Instrument(jamSettings.local.instrument)
 
 /* Colors */
 
