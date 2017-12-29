@@ -81,10 +81,12 @@ class EchoPlay{
         showNotes: true,
       }
     }
+    this.players = []
     this.socket.on('connect', () => {
       this.interface = new PadsInterface(this.parent, null, this.socket)
       this.setupSocket()
     })
+    this.displaySettings = false
   }
 
   setupSocket(){
@@ -96,35 +98,60 @@ class EchoPlay{
     })
     this.socket.on("new_jam", (globalJam) => {
       this.jam.global = globalJam
-      this.interface.setupJam(this.jam)
+      this.render()
       this.socket.emit("get_players")
     })
     this.socket.on("share_locals", (localJam) => {
       this.jam.local = localJam
-      this.interface.setupJam(this.jam)
+      this.render()
       this.socket.emit("get_players")
     })
 
     this.socket.on("players", players => {
       this.players = players
+      if (this.displaySettings == true) this.renderSettings()
+    })
+    this.socket.on("add_player", player => {
+      this.players.push(player)
+      if (this.displaySettings == true) this.renderSettings()
+    })
+    this.socket.on("remove_player", player => {
+      this.players.remove(player)
+      if (this.displaySettings == true) this.renderSettings()
     })
 
     this.socket.emit("request_jam")
     this.interface.bindSockets()
   }
 
+  toggleSettings(){
+    this.displaySettings = !this.displaySettings
+    this.render()
+  }
+
   renderSettings(){
     $(this.parent).html("<div id='settings'> \
-      <div><h1>Settings</h1></div> \
-      <div><h2>Jammers</h2></div> \
+      <h1>Settings</h1> \
+      <h2>Jammers</h2> \
+      <ul id='jammers'/> \
+      <h2>We're jamming in</h2> \
+      <p>"+this.jam.global.rootNote+" "+this.jam.global.scale+"</p> \
     </div>")
+    this.players.forEach(player => {
+      $("#jammers").append("<li>"+player+"</li>")
+    })
+  }
+
+  render(){
+    if (this.displaySettings == true) this.renderSettings()
+    else this.interface.setupJam(this.jam)
   }
 
   /* LOCAL SETTINGS */
 
   setRootOctave(rootOctave, share=false, mute=false){
     this.jam.local.rootOctave = rootOctave
-    this.interface.setupJam(this.jam)
+    this.render()
     if (share === true && this.jam.local.maestro === true) {
       this.socket.emit("share_locals", this.jam.local)
     }
@@ -135,7 +162,7 @@ class EchoPlay{
     if (octaveRange < 1) octaveRange = 1
     else if (octaveRange > 10) octaveRange = 10
     this.jam.local.octaveRange = octaveRange
-    this.interface.setupJam(this.jam)
+    this.render()
     if (share === true && this.jam.local.maestro === true) {
       this.socket.emit("share_locals", this.jam.local)
     }
@@ -151,7 +178,6 @@ class EchoPlay{
   setScale(scaleName){
     if (Object.keys(SCALES).indexOf(scaleName) == -1 || this.jam.local.maestro !== true) return
     this.jam.global.scale = scaleName
-    this.interface.setupJam(this.jam)
     this.socket.emit("update_jam", this.jam.global)
   }
 }

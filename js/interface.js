@@ -45,7 +45,7 @@ class Interface{
 
   noteOff(note, force = false){
     let select = this.id+" > [note='"+note+"'] .o-1"
-    if($(this.id+" [note='"+note+"'] .o-1").length > 0 || force == true){
+    if(this.instrument.triggeredNotes.length > 0 || force == true){
       this.instrument.triggerRelease(note)
       $(this.id+" [note='"+note+"']").removeClass("o-1")
     }
@@ -99,7 +99,6 @@ class Interface{
 
     // Refresh the full list of players
     this.socket.on("players", clients => {
-      console.log("interface players")
       this.removeAllPlayers()
       clients.forEach(client => {
         if (client != this.socket.id) this.addPlayer(client)

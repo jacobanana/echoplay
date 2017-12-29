@@ -14,9 +14,9 @@ function onMIDISuccess( midiAccess ) {
         let velocity = event.data[2]/127
         console.log(note, velocity, event.data[2])
         if (event.data[2] == 0){
-          noteOff(note, true)
+          echoplay.interface.noteOff(note, true)
         } else {
-          noteOn(note, true, false, velocity)
+          echoplay.interface.noteOn(note, true, false, velocity)
         }
       }
     }
