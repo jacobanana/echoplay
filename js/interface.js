@@ -1,11 +1,12 @@
 /* Scaled PAD like interface */
 class Interface{
   constructor(parent, jam, socket){
+    this.socket = socket
     this.id = "#"+socket.id
     this.parent = parent || "#interface"
     this.remoteInstruments = new Object()
     this.setPalette()
-    this.setupJam(jam)
+    if (jam) this.setupJam(jam)
   }
 
   buildAndBindAll(){
@@ -23,24 +24,7 @@ class Interface{
   }
 
   setupJam(jam){
-    if (!jam){
-      this.jam = {
-        local: {
-          maestro: true,
-          rootOctave: 3,
-          octaveRange: 2,
-          instrumentPreset: "poly_sine",
-          playRemote: true,
-        },
-        global: {
-          rootNote: ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][Math.floor(Math.random() * 12)],
-          scale: ["major", "minor", "minor_harmonic", "gipsy"][Math.floor(Math.random() * 4)],
-          showNotes: true,
-        }
-      }
-    } else {
-      this.jam = jam
-    }
+    this.jam = jam
     this.scaleIntervals = buildScale(this.jam.global.scale, this.jam.local.octaveRange)
     this.loadInstrument()
     this.buildAndBindAll()
@@ -49,12 +33,12 @@ class Interface{
   /* Instrument & note triggers */
   loadInstrument(preset){
     preset = preset || this.jam.local.instrumentPreset
-    this.instrument = new Instrument(preset)
+    this.instrument = new Instrument(this.socket, preset)
   }
 
   noteOn(note, trigger = true, retrigger = false, velocity = 1){
-    if (this.instrument.polyphony == 1 || this.instrument.triggeredNotes < this.instrument.polyphony){
-      if (this.instrument.triggeredNotes > 0 || trigger === true) $(this.id+" [note='"+note+"']").addClass("o-1")
+    if (this.instrument.polyphony == 1 || this.instrument.triggeredNotes.length < this.instrument.polyphony){
+      if (this.instrument.triggeredNotes.length > 0 || trigger === true) $(this.id+" [note='"+note+"']").addClass("o-1")
       this.instrument.triggerAttack(note, trigger, retrigger, velocity)
     }
   }
@@ -101,32 +85,33 @@ class Interface{
 
   bindSockets(){
     // Receives note data from other players
-    socket.on("note_on", data => {
+    this.socket.on("note_on", data => {
       $(this.id+" [note='"+data.note+"'] > [client_id="+data.id+"]").addClass("o-1")
       if (this.jam.local.playRemote == true) this.remoteInstruments[data.id].inst.triggerAttack(data.note)
     })
-    socket.on("note_off", data => {
+    this.socket.on("note_off", data => {
       $(this.id+" [note='"+data.note+"'] > [client_id="+data.id+"]").removeClass("o-1")
       if (this.jam.local.playRemote == true) this.remoteInstruments[data.id].inst.triggerRelease(data.note)
     })
-    socket.on("release_all", data => {
+    this.socket.on("release_all", data => {
       $(this.id+" [trigger=true] > [client_id="+data.id+"]").removeClass("o-1")
     })
 
     // Refresh the full list of players
-    socket.on("players", clients => {
+    this.socket.on("players", clients => {
+      console.log("interface players")
       this.removeAllPlayers()
       clients.forEach(client => {
-        if (client != this.id) this.addPlayer(client)
+        if (client != this.socket.id) this.addPlayer(client)
       })
     })
 
     // Add a new player to the jam
-    socket.on("add_player", player => { this.addPlayer(player) })
+    this.socket.on("add_player", player => { this.addPlayer(player) })
     // A player has left the jam
-    socket.on("remove_player", player => { this.removePlayer(player) })
+    this.socket.on("remove_player", player => { this.removePlayer(player) })
     // Server has dropped..
-    socket.on("disconnect", () => { this.removeAllPlayers() })
+    this.socket.on("disconnect", () => { this.removeAllPlayers() })
   }
 
   deleteRemoteInstrument(id){
@@ -134,14 +119,14 @@ class Interface{
   }
 
   addRemoteInstrument(id){
-    this.remoteInstruments[id] = new Instrument("poly_square")
+    this.remoteInstruments[id] = new Instrument(this.socket, "poly_square")
   }
 }
 
 
 class PadsInterface extends Interface{
   build(){
-    $(this.parent).html($("<div/>").addClass("block").attr({id: socket.id}))
+    $(this.parent).html($("<div/>").addClass("block").attr({id: this.socket.id}))
     this.scaleIntervals.forEach((interval, index) => {
       let noteOctave = this.jam.local.rootOctave + parseInt((interval + NoteInterval(this.jam.global.rootNote))/12)
       let noteNumber = (interval + NoteInterval(this.jam.global.rootNote)) % 12

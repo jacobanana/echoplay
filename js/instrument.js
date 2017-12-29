@@ -1,6 +1,7 @@
 class Instrument{
-  constructor(presetName){
-    this.triggeredNotes = 0
+  constructor(socket, presetName){
+    this.socket = socket
+    this.triggeredNotes = new Array()
     if (presetName){
       this.loadPreset(presetName)
     }
@@ -25,28 +26,19 @@ class Instrument{
     })
   }
 
-  triggerRoot(){
-    if (this.inst){
-      this.inst.triggerAttackRelease(
-        jamSettings.global.rootNote+(jamSettings.local.rootOctave).toString()
-        , "16n"
-      )
-    }
-  }
-
   triggerAttack(note, trigger, retrigger, velocity){
     if (this.inst){
       if (this.polyphony == 1){
-        if (this.triggeredNotes > 0 || trigger === true){
+        if (this.triggeredNotes.length > 0 || trigger === true){
           this.inst.triggerAttack(note, null, velocity)
-          socket.emit("note_on", note)
+          this.socket.emit("note_on", note)
         }
-        if (trigger === true) this.triggeredNotes += 1
+        if (trigger === true) this.triggeredNotes.push(note)
       } else {
-        if (trigger === true || (retrigger === true && this.triggeredNotes > 0)){
-          if (retrigger !== true) this.triggeredNotes += 1
+        if (trigger === true || (retrigger === true && this.triggeredNotes.length > 0)){
+          if (retrigger !== true) this.triggeredNotes.push(note)
           this.inst.triggerAttack(note, null, velocity)
-          socket.emit("note_on", note)
+          this.socket.emit("note_on", note)
         }
       }
     }
@@ -55,13 +47,13 @@ class Instrument{
   triggerRelease(note){
     if (this.inst){
       if (this.monophonic == true){
-        if (this.triggeredNotes > 0) this.triggeredNotes -= 1
-        if (this.triggeredNotes <= 0) this.inst.triggerRelease()
+        if (this.triggeredNotes.length > 0) this.triggeredNotes.length = 0
+        if (this.triggeredNotes.length = 0) this.inst.triggerRelease()
       } else {
-        if (this.triggeredNotes > 0) this.triggeredNotes -= 1
+        if (this.triggeredNotes.length > 0) this.triggeredNotes.remove(note)
         this.inst.triggerRelease(note)
       }
-      socket.emit("note_off", note)
+      this.socket.emit("note_off", note)
     }
   }
 
@@ -69,15 +61,15 @@ class Instrument{
     if (this.inst){
       if (this.monophonic == true) this.inst.triggerRelease()
       else this.inst.releaseAll()
-      this.triggeredNotes = 0
-      socket.emit("release_all")
+      this.triggeredNotes.length = 0
+      this.socket.emit("release_all")
     }
   }
 
   noteLeave(note){
     if (this.inst){
       if (this.monophonic == false) this.inst.triggerRelease(note)
-      socket.emit("note_off", note)
+      this.socket.emit("note_off", note)
     }
   }
 

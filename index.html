@@ -42,15 +42,6 @@
        .then(() => { return $.getScript("socket.io/socket.io.js") })
        .then(() => { return $.getScript("js/qrcode/qrcode.min.js") })
        .then(() => {
-         socket = io.connect()
-         socket.on("url", function(url){
-           console.log(url)
-          QRCode.toCanvas(document.getElementById('qrcode'), url, {scale: 2, color: {light: "#000000ff", dark: "#ffffffff"}}, function (error) {
-            if (error) console.error(error)
-            $("#url").text(url)
-          })
-         })
-
          if (isElectron() == true){
            Tone = require("tone");
          } else {
@@ -60,24 +51,13 @@
        .then(() => { return $.getScript("js/mobile.js") })
        .then(() => { return $.getScript("js/note.js") })
        .then(() => { return $.getScript("js/instrument.js") })
-       .then(() => { return $.getScript("js/settings.js") })
        .then(() => { return $.getScript("js/interface.js") })
-       .then(() => { return $.getScript("js/midi.js") })
+       .then(() => { return $.getScript("js/settings.js") })
+//       .then(() => { return $.getScript("js/midi.js") })
        .then(() => {
-         pads = new PadsInterface("#interface", null, socket)
          $("h1").click(function(){ toggleFullScreen() })
-         socket.on("new_jam", function(jam){
-           jamSettings.global = jam
-           pads.setupJam(jamSettings)
-         })
-         socket.on("share_locals", function(localSettings){
-           jamSettings.local = localSettings
-           pads.setupJam(jamSettings)
-         })
-         socket.emit("request_jam")
-       }).then(() =>{
-         pads.bindSockets()
-         socket.emit("get_players")
+         $("#qrcode").click(function(){ echoplay.renderSettings() })
+         //echoplay.socket.emit("get_players")
        })
     })
     </script>

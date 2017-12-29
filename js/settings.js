@@ -1,18 +1,6 @@
 /* Fastest latency on non mobile devices */
 if (!isMobile()) Tone.context.latencyHint = "fastest";
 
-/* Initial local jam settings */
-
-let jamSettings = {
-  local: {
-    maestro: true,
-    rootOctave: 3,
-    octaveRange: 2,
-    instrumentPreset: "poly_sine",
-    playRemote: true,
-  }
-}
-
 /* Colors */
 
 function makeColorPalette(frequency,
@@ -44,123 +32,11 @@ function makeColorPalette(frequency,
   return palette
 }
 
-/* KEYBOARD SHORTCUTS */
-
-const MAESTRO_SHORTCUTS = {
-  "alt+a": function() { setRootNote('A') },
-  "alt+b": function() { setRootNote('B') },
-  "alt+c": function() { setRootNote('C') },
-  "alt+d": function() { setRootNote('D') },
-  "alt+e": function() { setRootNote('E') },
-  "alt+f": function() { setRootNote('F') },
-  "alt+g": function() { setRootNote('G') },
-  "alt+right": function() {
-    if (jamSettings.global.rootNote == 'B'){
-      setRootOctave(jamSettings.local.rootOctave+1)
-    }
-    setRootNote(SHARPS[(SHARPS.indexOf(jamSettings.global.rootNote)+1)%SHARPS.length])
-  },
-  "alt+left": function() {
-    let nextNote
-
-    if (jamSettings.global.rootNote == 'C'){
-      setRootOctave(jamSettings.local.rootOctave-1)
-      nextNote = 'B'
-    }
-    else{ nextNote = SHARPS[(SHARPS.indexOf(jamSettings.global.rootNote)-1)%SHARPS.length] }
-    setRootNote(nextNote)
-  },
-  "alt+r k": function() { setRootNote(SHARPS[Math.floor(Math.random() * 12)]) }, // random root note
-  "alt+up": function() { setRootOctave(jamSettings.local.rootOctave+1, true) },
-  "alt+down": function() { setRootOctave(jamSettings.local.rootOctave-1, true) },
-  "alt+shift+up": function() { setOctaveRange(jamSettings.local.octaveRange+1, true) },
-  "alt+shift+down": function() { setOctaveRange(jamSettings.local.octaveRange-1, true) },
-  "alt+shift+right": function() {
-    let nextScale = Object.keys(SCALES)[(Object.keys(SCALES).indexOf(jamSettings.global.scale)+1) % Object.keys(SCALES).length]
-    setScale(nextScale)
-  },
-  "alt+shift+left": function() {
-    let scales = Object.keys(SCALES)
-    let nextScale
-    if (jamSettings.global.scale == scales[0]){
-      nextScale = scales[scales.length-1]
-    }
-    else{
-      nextScale = scales[(scales.indexOf(jamSettings.global.scale)-1)%scales.length]
-    }
-    setScale(nextScale)
-  },
-  "alt+r s": function() { // random scale
-    setScale(Object.keys(SCALES)[Math.floor(Math.random() * Object.keys(SCALES).length)])
-  },
-  "alt+0": function() { setScale("chromatic") },
-  "alt+1": function() { setScale("major") },
-  "alt+2": function() { setScale("minor") },
-  "alt+3": function() { setScale("minor_harmonic") },
-  "alt+4": function() { setScale("gipsy") },
-  "alt+5": function() { setScale("pentatonic") },
-  "alt+6": function() { setScale("minor_melodic_asc") },
-  "alt+7": function() { setScale("minor_melodic_desc") },
-  "alt+8": function() { setScale("octatonic") },
-  "alt+n": function() { if(jamSettings.local.maestro) socket.emit("show_note_names", true) },
-  "alt+shift+n": function() { if(jamSettings.local.maestro) socket.emit("show_note_names", false) },
-}
-
-const LOCAL_SHORTCUTS = {
-  "meta+up": function() { setRootOctave(jamSettings.local.rootOctave+1) },
-  "meta+down": function() { setRootOctave(jamSettings.local.rootOctave-1) },
-  "meta+shift+up": function() { setOctaveRange(jamSettings.local.octaveRange+1) },
-  "meta+shift+down": function() { setOctaveRange(jamSettings.local.octaveRange-1) },
-  "mod+.": function() { volumeUp() },
-  "mod+,": function() { volumeDown() },
-  "mod+p": function() { jamSettings.local.playRemote = true },
-  "mod+shift+p": function() { jamSettings.local.playRemote = false },
-  "f1": function() { toggleFullScreen() },
-}
-
+/* WINDOW CONTROL */
 if (isElectron()){
   const { remote } = require('electron');
   Mousetrap.bind("f12", () => { remote.getCurrentWindow().toggleDevTools() })
 }
-
-Mousetrap.bind(LOCAL_SHORTCUTS)
-if (jamSettings.local.maestro === true) Mousetrap.bind(MAESTRO_SHORTCUTS)
-
-/* LOCAL SETTINGS */
-
-function setRootOctave(rootOctave, share=false, mute=false){
-  jamSettings.local.rootOctave = rootOctave
-  pads.setupJam(jamSettings)
-  if (share === true && jamSettings.local.maestro === true) socket.emit("share_locals", jamSettings.local)
-  pads.instrument.triggerRoot()
-}
-
-function setOctaveRange(octaveRange, share=false){
-  if (typeof(octaveRange) != "number") return
-  if (octaveRange < 1) octaveRange = 1
-  else if (octaveRange > 10) octaveRange = 10
-  jamSettings.local.octaveRange = octaveRange
-  pads.setupJam(jamSettings)
-  if (share === true && jamSettings.local.maestro === true) socket.emit("share_locals", jamSettings.local)
-}
-
-/* GLOBAL SETTINGS */
-
-function setRootNote(rootNote, mute = false){
-  if (NOTE_NAMES.indexOf(rootNote)==-1 || jamSettings.local.maestro !== true) return
-  jamSettings.global.rootNote = rootNote
-  socket.emit("update_jam", jamSettings.global)
-  pads.instrument.triggerRoot()
-}
-
-function setScale(scaleName){
-  if (Object.keys(SCALES).indexOf(scaleName) == -1 || jamSettings.local.maestro !== true) return
-  jamSettings.global.scale = scaleName
-  pads.setupJam(jamSettings)
-  socket.emit("update_jam", jamSettings.global)
-}
-
-/* WINDOW CONTROL */
 
 function toggleFullScreen() {
   var doc = window.document;
@@ -185,3 +61,175 @@ const KEYS_PAD = [
   "w", "e", "r", "t", "y", "u", "i", "o",
   "2", "3", "4", "5", "6", "7", "8", "9"
 ]
+
+
+class EchoPlay{
+  constructor(parent){
+    this.socket = io.connect()
+    this.parent = parent || "#interface"
+    this.jam = {
+      local: {
+        maestro: true,
+        rootOctave: 3,
+        octaveRange: 2,
+        instrumentPreset: "poly_sine",
+        playRemote: true,
+      },
+      global: {
+        rootNote: ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][Math.floor(Math.random() * 12)],
+        scale: ["major", "minor", "minor_harmonic", "gipsy"][Math.floor(Math.random() * 4)],
+        showNotes: true,
+      }
+    }
+    this.socket.on('connect', () => {
+      this.interface = new PadsInterface(this.parent, null, this.socket)
+      this.setupSocket()
+    })
+  }
+
+  setupSocket(){
+    this.socket.on("url", (url) => {
+     QRCode.toCanvas(document.getElementById('qrcode'), url, {scale: 2, color: {light: "#000000ff", dark: "#ffffffff"}}, function (error) {
+       if (error) console.error(error)
+       $("#url").text(url)
+     })
+    })
+    this.socket.on("new_jam", (globalJam) => {
+      this.jam.global = globalJam
+      this.interface.setupJam(this.jam)
+      this.socket.emit("get_players")
+    })
+    this.socket.on("share_locals", (localJam) => {
+      this.jam.local = localJam
+      this.interface.setupJam(this.jam)
+      this.socket.emit("get_players")
+    })
+
+    this.socket.on("players", players => {
+      this.players = players
+    })
+
+    this.socket.emit("request_jam")
+    this.interface.bindSockets()
+  }
+
+  renderSettings(){
+    $(this.parent).html("<div id='settings'> \
+      <div><h1>Settings</h1></div> \
+      <div><h2>Jammers</h2></div> \
+    </div>")
+  }
+
+  /* LOCAL SETTINGS */
+
+  setRootOctave(rootOctave, share=false, mute=false){
+    this.jam.local.rootOctave = rootOctave
+    this.interface.setupJam(this.jam)
+    if (share === true && this.jam.local.maestro === true) {
+      this.socket.emit("share_locals", this.jam.local)
+    }
+  }
+
+  setOctaveRange(octaveRange, share=false){
+    if (typeof(octaveRange) != "number") return
+    if (octaveRange < 1) octaveRange = 1
+    else if (octaveRange > 10) octaveRange = 10
+    this.jam.local.octaveRange = octaveRange
+    this.interface.setupJam(this.jam)
+    if (share === true && this.jam.local.maestro === true) {
+      this.socket.emit("share_locals", this.jam.local)
+    }
+  }
+
+  /* GLOBAL SETTINGS */
+  setRootNote(rootNote, mute = false){
+    if (NOTE_NAMES.indexOf(rootNote)==-1 || this.jam.local.maestro !== true) return
+    this.jam.global.rootNote = rootNote
+    this.socket.emit("update_jam", this.jam.global)
+  }
+
+  setScale(scaleName){
+    if (Object.keys(SCALES).indexOf(scaleName) == -1 || this.jam.local.maestro !== true) return
+    this.jam.global.scale = scaleName
+    this.interface.setupJam(this.jam)
+    this.socket.emit("update_jam", this.jam.global)
+  }
+}
+
+let echoplay = new EchoPlay()
+
+/* KEYBOARD SHORTCUTS for EchoPlay */
+const MAESTRO_SHORTCUTS = {
+  "alt+a": function() { echoplay.setRootNote('A') },
+  "alt+b": function() { echoplay.setRootNote('B') },
+  "alt+c": function() { echoplay.setRootNote('C') },
+  "alt+d": function() { echoplay.setRootNote('D') },
+  "alt+e": function() { echoplay.setRootNote('E') },
+  "alt+f": function() { echoplay.setRootNote('F') },
+  "alt+g": function() { echoplay.setRootNote('G') },
+  "alt+right": function() {
+    if (echoplay.jam.global.rootNote == 'B'){
+      echoplay.setRootOctave(echoplay.jam.local.rootOctave+1)
+    }
+    echoplay.setRootNote(SHARPS[(SHARPS.indexOf(echoplay.jam.global.rootNote)+1)%SHARPS.length])
+  },
+  "alt+left": function() {
+    let nextNote
+
+    if (echoplay.jam.global.rootNote == 'C'){
+      echoplay.setRootOctave(echoplay.jam.local.rootOctave-1)
+      nextNote = 'B'
+    }
+    else{ nextNote = SHARPS[(SHARPS.indexOf(echoplay.jam.global.rootNote)-1)%SHARPS.length] }
+    echoplay.setRootNote(nextNote)
+  },
+  "alt+r k": function() { echoplay.setRootNote(SHARPS[Math.floor(Math.random() * 12)]) }, // random root note
+  "alt+up": function() { echoplay.setRootOctave(echoplay.jam.local.rootOctave+1, true) },
+  "alt+down": function() { echoplay.setRootOctave(echoplay.jam.local.rootOctave-1, true) },
+  "alt+shift+up": function() { echoplay.setOctaveRange(echoplay.jam.local.octaveRange+1, true) },
+  "alt+shift+down": function() { echoplay.setOctaveRange(echoplay.jam.local.octaveRange-1, true) },
+  "alt+shift+right": function() {
+    let nextScale = Object.keys(SCALES)[(Object.keys(SCALES).indexOf(echoplay.jam.global.scale)+1) % Object.keys(SCALES).length]
+    echoplay.setScale(nextScale)
+  },
+  "alt+shift+left": function() {
+    let scales = Object.keys(SCALES)
+    let nextScale
+    if (echoplay.jam.global.scale == scales[0]){
+      nextScale = scales[scales.length-1]
+    }
+    else{
+      nextScale = scales[(scales.indexOf(echoplay.jam.global.scale)-1)%scales.length]
+    }
+    echoplay.setScale(nextScale)
+  },
+  "alt+r s": function() { // random scale
+    echoplay.setScale(Object.keys(SCALES)[Math.floor(Math.random() * Object.keys(SCALES).length)])
+  },
+  "alt+0": function() { echoplay.setScale("chromatic") },
+  "alt+1": function() { echoplay.setScale("major") },
+  "alt+2": function() { echoplay.setScale("minor") },
+  "alt+3": function() { echoplay.setScale("minor_harmonic") },
+  "alt+4": function() { echoplay.setScale("gipsy") },
+  "alt+5": function() { echoplay.setScale("pentatonic") },
+  "alt+6": function() { echoplay.setScale("minor_melodic_asc") },
+  "alt+7": function() { echoplay.setScale("minor_melodic_desc") },
+  "alt+8": function() { echoplay.setScale("octatonic") },
+  "alt+n": function() { if(echoplay.jam.local.maestro) echoplay.socket.emit("show_note_names", true) },
+  "alt+shift+n": function() { if(echoplay.jam.local.maestro) echoplay.socket.emit("show_note_names", false) },
+}
+
+const LOCAL_SHORTCUTS = {
+  "meta+up": function() { echoplay.setRootOctave(echoplay.jam.local.rootOctave+1) },
+  "meta+down": function() { echoplay.setRootOctave(echoplay.jam.local.rootOctave-1) },
+  "meta+shift+up": function() { echoplay.setOctaveRange(echoplay.jam.local.octaveRange+1) },
+  "meta+shift+down": function() { echoplay.setOctaveRange(echoplay.jam.local.octaveRange-1) },
+  "mod+.": function() { echoplay.interface.instrument.volumeUp() },
+  "mod+,": function() { echoplay.interface.instrument.volumeDown() },
+  "mod+p": function() { echoplay.jam.local.playRemote = true },
+  "mod+shift+p": function() { echoplay.jam.local.playRemote = false },
+  "f1": function() { toggleFullScreen() },
+}
+
+Mousetrap.bind(LOCAL_SHORTCUTS)
+if (echoplay.jam.local.maestro === true) Mousetrap.bind(MAESTRO_SHORTCUTS)
