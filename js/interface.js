@@ -25,7 +25,7 @@ class Interface{
 
   setupJam(jam){
     this.jam = jam
-    this.scaleIntervals = buildScale(this.jam.global.scale, this.jam.local.octaveRange)
+    this.scale = buildScale(this.jam.global.scale, this.jam.local.octaveRange)
     this.loadInstrument()
     this.buildAndBindAll()
   }
@@ -33,26 +33,41 @@ class Interface{
   /* Instrument & note triggers */
   loadInstrument(preset){
     preset = preset || this.jam.local.instrumentPreset
+    if (this.instrument && preset!=this.instrument.name){
+      if (this.instrument.inst) try { this.instrument.inst.dispose() } catch(e) {}
+    }
     this.instrument = new Instrument(this.socket, preset)
   }
 
   noteOn(note, trigger = true, retrigger = false, velocity = 1){
-    if (this.instrument.polyphony == 1 || this.instrument.triggeredNotes.length < this.instrument.polyphony){
-      if (this.instrument.triggeredNotes.length > 0 || trigger === true) $(this.id+" [note='"+note+"']").addClass("o-1")
-      this.instrument.triggerAttack(note, trigger, retrigger, velocity)
+    try{
+      if (this.instrument.polyphony == 1 || this.instrument.triggeredNotes.length < this.instrument.polyphony){
+        if (this.instrument.triggeredNotes.length > 0 || trigger === true) $(this.id+" [note='"+note+"']").addClass("o-1")
+        this.instrument.triggerAttack(note, trigger, retrigger, velocity)
+      }
+    } catch(e) {
+      console.log(e)
     }
   }
 
   noteOff(note, force = false){
-    let select = this.id+" > [note='"+note+"'] .o-1"
-    if(this.instrument.triggeredNotes.length > 0 || force == true){
-      this.instrument.triggerRelease(note)
-      $(this.id+" [note='"+note+"']").removeClass("o-1")
+    try{
+      let select = this.id+" > [note='"+note+"'] .o-1"
+      if(this.instrument.triggeredNotes.length > 0 || force == true){
+        this.instrument.triggerRelease(note)
+        $(this.id+" [note='"+note+"']").removeClass("o-1")
+      }
+    } catch(e){
+      console.log(e)
     }
   }
 
   noteLeave(note){
-    this.instrument.noteLeave(note)
+    try{
+      this.instrument.noteLeave(note)
+    } catch(e){
+      console.log(e)
+    }
   }
 
   bindMouseAndTouch(){
@@ -87,11 +102,22 @@ class Interface{
     // Receives note data from other players
     this.socket.on("note_on", data => {
       $(this.id+" [note='"+data.note+"'] > [client_id="+data.id+"]").addClass("o-1")
-      if (this.jam.local.playRemote == true) this.remoteInstruments[data.id].inst.triggerAttack(data.note)
+      try{
+        if (this.jam.local.playRemote == true && this.remoteInstruments[data.id].inst)
+        { this.remoteInstruments[data.id].inst.triggerAttack(data.note) }
+      } catch(e){
+        console.log(e)
+      }
     })
     this.socket.on("note_off", data => {
       $(this.id+" [note='"+data.note+"'] > [client_id="+data.id+"]").removeClass("o-1")
-      if (this.jam.local.playRemote == true) this.remoteInstruments[data.id].inst.triggerRelease(data.note)
+      try{
+        if (this.jam.local.playRemote == true && this.remoteInstruments[data.id].inst) {
+          this.remoteInstruments[data.id].inst.triggerRelease(data.note)
+        } 
+      } catch(e) {
+        console.log(e)
+      }
     })
     this.socket.on("release_all", data => {
       $(this.id+" [trigger=true] > [client_id="+data.id+"]").removeClass("o-1")
@@ -114,6 +140,7 @@ class Interface{
   }
 
   deleteRemoteInstrument(id){
+    try{ this.remoteInstruments[id].dispose() } catch(e) {}
     delete this.remoteInstruments[id]
   }
 
@@ -126,13 +153,17 @@ class Interface{
 class PadsInterface extends Interface{
   build(){
     $(this.parent).html($("<div/>").addClass("block").attr({id: this.socket.id}))
-    this.scaleIntervals.forEach((interval, index) => {
+    this.scale.intervals.forEach((interval, index) => {
       let noteOctave = this.jam.local.rootOctave + parseInt((interval + NoteInterval(this.jam.global.rootNote))/12)
       let noteNumber = (interval + NoteInterval(this.jam.global.rootNote)) % 12
       let noteName = NoteIntervalToName(interval, this.jam.global.rootNote) + noteOctave
       $(this.id).append(
           $("<div/>")
-            .addClass("pad")
+            .addClass("pad"+ (
+              (this.scale.repeat.indexOf(index) != -1 ||
+               this.scale.intervals.indexOf(interval)==this.scale.intervals.length-1)
+               ? " repeat" : "")
+             )
             .css("background-color", this.colorPalette[noteNumber])
             .attr({
                 "note": noteName,

@@ -149,10 +149,19 @@ SCALES.chromatic = {definition: [0,1,2,3,4,5,6,7,8,9,10,11], rootRepeat: false}
 function buildScale(scale, octaveRange = 1){
   let scaleDefinition = SCALES[scale].definition.slice();
   let scaleIntervals = new Array()
+  let repeat = new Array()
   let totalNumberOfNotes = (scaleDefinition.length + SCALES[scale].rootRepeat) * octaveRange
-  if (SCALES[scale].rootRepeat==true) scaleDefinition.push(12)
+  if (SCALES[scale].rootRepeat==true) {
+    scaleDefinition.push(12)
+    repeat.push(scaleDefinition.length)
+  }
   for (i = 0; i<totalNumberOfNotes; i++){
     scaleIntervals.push(scaleDefinition[i%scaleDefinition.length] + parseInt(i/scaleDefinition.length) * 12)
   }
-  return scaleIntervals
+  return {
+    name: scale,
+    definition: scaleDefinition,
+    intervals: scaleIntervals,
+    repeat: repeat
+  }
 }

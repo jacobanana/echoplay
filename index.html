@@ -49,6 +49,7 @@
        .then(() => { return $.getScript("js/mousetrap/plugins/bind-dictionary/mousetrap-bind-dictionary.min.js") })
        .then(() => { return $.getScript("socket.io/socket.io.js") })
        .then(() => { return $.getScript("js/qrcode/qrcode.min.js") })
+       .then(() => { return $.getScript("js/vendor/startaudiocontext.js") })
        .then(() => {
          if (isElectron() == true){
            Tone = require("tone");
@@ -56,11 +57,9 @@
            return $.getScript("js/tone/Tone.min.js")
          }
         })
-       .then(() => { return $.getScript("js/vendor/startaudiocontext.js") })
        .then(() => { scripts.forEach(script => {return $.getScript(script)}) })
        .then(() => {
-         $("h1").click(function(){ toggleFullScreen() })
-         $("#qrcode").click(function(){ echoplay.toggleSettings() })
+         $("h1").click(function(){ echoplay.toggleSettings() })
        })
     })
     </script>
