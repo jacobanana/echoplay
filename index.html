@@ -26,7 +26,7 @@
     </div>
 
     <script>
-    var socket, Tone, pads
+    var Tone
     function isElectron() {
       return (typeof process !== "undefined") && process.versions && (process.versions.electron !== undefined)
     }
@@ -36,9 +36,17 @@
     }
 
     $(window).on("load", function() {
+      let scripts = [
+        'js/mobile.js',
+        'js/note.js',
+        'js/instrument.js',
+        'js/interface.js',
+        'js/settings.js',
+        'js/shortcuts.js',
+        'js/midi.js'
+      ]
       $.getScript("js/mousetrap/mousetrap.min.js")
        .then(() => { return $.getScript("js/mousetrap/plugins/bind-dictionary/mousetrap-bind-dictionary.min.js") })
-       .then(() => { return $.getScript("js/vendor/startaudiocontext.js") })
        .then(() => { return $.getScript("socket.io/socket.io.js") })
        .then(() => { return $.getScript("js/qrcode/qrcode.min.js") })
        .then(() => {
@@ -48,12 +56,8 @@
            return $.getScript("js/tone/Tone.min.js")
          }
         })
-       .then(() => { return $.getScript("js/mobile.js") })
-       .then(() => { return $.getScript("js/note.js") })
-       .then(() => { return $.getScript("js/instrument.js") })
-       .then(() => { return $.getScript("js/interface.js") })
-       .then(() => { return $.getScript("js/settings.js") })
-       .then(() => { return $.getScript("js/midi.js") })
+       .then(() => { return $.getScript("js/vendor/startaudiocontext.js") })
+       .then(() => { scripts.forEach(script => {return $.getScript(script)}) })
        .then(() => {
          $("h1").click(function(){ toggleFullScreen() })
          $("#qrcode").click(function(){ echoplay.toggleSettings() })

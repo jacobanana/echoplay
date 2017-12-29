@@ -75,7 +75,7 @@ class Instrument{
 
   setVolume(volume){
     if (typeof(volume)!="number" || volume > 0) return
-    this.inst.set({volume})
+    this.inst.volume.value = volume
   }
 
   volumeUp(){
