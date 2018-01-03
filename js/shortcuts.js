@@ -1,3 +1,5 @@
+let echoplay = new EchoPlay()
+
 /* KEYBOARD SHORTCUTS for EchoPlay */
 const MAESTRO_SHORTCUTS = {
   "alt+a": function() { echoplay.setRootNote('A') },

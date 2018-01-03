@@ -85,6 +85,7 @@ class EchoPlay{
     this.socket.on('connect', () => {
       this.interface = new PadsInterface(this.parent, null, this.socket)
       this.setupSocket()
+      this.socket.emit("get_players")
     })
     this.displaySettings = false
   }
@@ -96,27 +97,40 @@ class EchoPlay{
        $("#url").text(url)
      })
     })
+
     this.socket.on("new_jam", (globalJam) => {
       this.jam.global = globalJam
       this.render()
-      this.socket.emit("get_players")
     })
     this.socket.on("share_locals", (localJam) => {
       this.jam.local = localJam
       this.render()
-      this.socket.emit("get_players")
     })
 
     this.socket.on("players", players => {
-      this.players = players
+      console.log("players received")
+      players.forEach(player => {
+        console.log("player:", player)
+        if (player != this.socket.id && this.players.indexOf(player)==-1) {
+          console.log("i'm new!!")
+          this.players.push(player)
+          this.interface.addPlayer(player)
+        }
+      })
       if (this.displaySettings == true) this.renderSettings()
     })
+
     this.socket.on("add_player", player => {
+      console.log("add player:", player)
       this.players.push(player)
+      this.interface.addPlayer(player)
       if (this.displaySettings == true) this.renderSettings()
     })
+
     this.socket.on("remove_player", player => {
+      console.log("remove player:", player)
       this.players.remove(player)
+      this.interface.removePlayer(player)
       if (this.displaySettings == true) this.renderSettings()
     })
 
@@ -181,5 +195,3 @@ class EchoPlay{
     this.socket.emit("update_jam", this.jam.global)
   }
 }
-
-let echoplay = new EchoPlay()

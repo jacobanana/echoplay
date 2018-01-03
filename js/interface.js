@@ -114,7 +114,7 @@ class Interface{
       try{
         if (this.jam.local.playRemote == true && this.remoteInstruments[data.id].inst) {
           this.remoteInstruments[data.id].inst.triggerRelease(data.note)
-        } 
+        }
       } catch(e) {
         console.log(e)
       }
@@ -123,20 +123,8 @@ class Interface{
       $(this.id+" [trigger=true] > [client_id="+data.id+"]").removeClass("o-1")
     })
 
-    // Refresh the full list of players
-    this.socket.on("players", clients => {
-      this.removeAllPlayers()
-      clients.forEach(client => {
-        if (client != this.socket.id) this.addPlayer(client)
-      })
-    })
-
-    // Add a new player to the jam
-    this.socket.on("add_player", player => { this.addPlayer(player) })
-    // A player has left the jam
-    this.socket.on("remove_player", player => { this.removePlayer(player) })
     // Server has dropped..
-    this.socket.on("disconnect", () => { this.removeAllPlayers() })
+    this.socket.on("disconnect", () => { this.removeAllPlayers(); alert("Server disconnected... you are now playing by yourself") })
   }
 
   deleteRemoteInstrument(id){
@@ -178,16 +166,25 @@ class PadsInterface extends Interface{
             )
           )
       })
+      Object.keys(this.remoteInstruments).forEach(id => {
+        $(this.id+" [trigger=true]").append(
+          $("<div/>")
+            .attr({client_id: id})
+            .addClass("mini-pad")
+        )
+      })
   }
 
   /* ADD ANOTHER PLAYER */
   addPlayer(id){
-    $(this.id+" [trigger=true]").append(
-      $("<div/>")
-        .attr({client_id: id})
-        .addClass("mini-pad")
-    )
-    this.addRemoteInstrument(id)
+    if (Object.keys(this.remoteInstruments).indexOf(id) == -1){
+      $(this.id+" [trigger=true]").append(
+        $("<div/>")
+          .attr({client_id: id})
+          .addClass("mini-pad")
+      )
+      this.addRemoteInstrument(id)
+    }
   }
 
   /* REMOVE ANOTHER PLAYER */
@@ -198,10 +195,11 @@ class PadsInterface extends Interface{
 
   /* REMOVE ALL OTHER PLAYERS */
   removeAllPlayers(){
-    $(this.id+" .mini-pad").each((event) => {
-      this.deleteRemoteInstrument($(event.target).attr('client_id'))
-      $(event.target).remove()
+    console.log("remove all players..")
+    Object.keys(this.remoteInstruments).forEach(player => {
+      this.deleteRemoteInstrument(id)
     })
+    $(this.id+" .mini-pad").remove()
   }
 
   /* LOCAL PLAYER INTERACTION */

@@ -133,7 +133,7 @@ p {
 
 .pad-note{
   display: flex;
-  font-size: 3em;
+  font-size: 1.6em;
   font-weight: bold;
   flex-grow: 10;
   align-items: center;
@@ -153,16 +153,7 @@ p {
   }
 }
 
-@media (max-height: 800px){
-  .pad-note{
-    font-size: 1.6em;
-  }
-}
-
 @media (max-width: 400px){
-  .pad-note{
-    font-size: 1.6em;
-  }
   #header{
     font-size: 80%;
     height: 40px;
