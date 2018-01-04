@@ -5,6 +5,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="css/echoplay.css"/>
+    <script>
+      function isElectron() {
+        return (typeof process !== "undefined") && process.versions && (process.versions.electron !== undefined)
+      }
+      function isMobile(){
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      }
+
+      if (isElectron()){
+        window.$ = window.jQuery = require('jquery');
+      }
+    </script>
   </head>
   <body>
     <script src="js/jquery/jquery.min.js"></script>
@@ -26,40 +38,41 @@
     </div>
 
     <script>
+    $.getMultiScripts = function(arr, path) {
+        var _arr = $.map(arr, function(scr) {
+            return $.getScript( (path||"") + scr );
+        });
+
+        _arr.push($.Deferred(function( deferred ){
+            $( deferred.resolve );
+        }));
+
+        return $.when.apply($, _arr);
+    }
+
     var Tone, echoplay
-    function isElectron() {
-      return (typeof process !== "undefined") && process.versions && (process.versions.electron !== undefined)
-    }
-
-    if (isElectron()){
-      window.$ = window.jQuery = require('jquery');
-    }
-
     $(window).on("load", function() {
+      let vendorScripts = [
+        'js/mousetrap/mousetrap.min.js',
+        'js/mousetrap/plugins/bind-dictionary/mousetrap-bind-dictionary.min.js',
+        'socket.io/socket.io.js',
+        'js/qrcode/qrcode.min.js',
+        'js/vendor/startaudiocontext.js',
+      ]
       let scripts = [
         'js/mobile.js',
         'js/note.js',
         'js/instrument.js',
         'js/interface.js',
-        'js/settings.js',
-        'js/shortcuts.js',
+        'js/echoplay.js',
         'js/midi.js'
       ]
-      $.getScript("js/mousetrap/mousetrap.min.js")
-       .then(() => { return $.getScript("js/mousetrap/plugins/bind-dictionary/mousetrap-bind-dictionary.min.js") })
-       .then(() => { return $.getScript("socket.io/socket.io.js") })
-       .then(() => { return $.getScript("js/qrcode/qrcode.min.js") })
-       .then(() => { return $.getScript("js/vendor/startaudiocontext.js") })
-       .then(() => {
-         if (isElectron() == true){
-           Tone = require("tone");
-         } else {
-           return $.getScript("js/tone/Tone.min.js")
-         }
-        })
-       .then(() => { scripts.forEach(script => {return $.getScript(script)}) })
-       .then(() => {
-         $("h1").click(function(){ echoplay.toggleSettings() })
+
+      $.getMultiScripts(vendorScripts).done(function() {
+        console.log("loaded vendor scripts")
+        if (isElectron() == true) Tone = require("tone");
+        else $.getScript("js/tone/Tone.min.js")
+        $.getMultiScripts(scripts).done(function() { console.log("echoplay ready to jam") })
        })
     })
     </script>

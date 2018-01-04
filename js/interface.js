@@ -32,7 +32,7 @@ class Interface{
   loadInstrument(preset){
     preset = preset || this.jam.local.instrumentPreset
     if (this.instrument && preset!=this.instrument.name){
-      if (this.instrument.inst) try { this.instrument.inst.dispose() } catch(e) {}
+      if (this.instrument.inst) try { this.instrument.inst.dispose(); console.log('instrument disposed') } catch(e) {}
     }
     this.instrument = new Instrument(this.socket, preset)
   }
@@ -42,7 +42,7 @@ class Interface{
       if (this.instrument.polyphony == 1 || this.instrument.triggeredNotes.length < this.instrument.polyphony){
         if (this.instrument.triggeredNotes.length > 0 || trigger === true)
           $(this.id+" [note='"+note+"']")
-            .css("background-color", this.colorPaletteOn[NoteInterval(note)])
+            .css("background-color", this.colorPaletteOn[NoteInterval(note.replace(/\d+/g, ''))])
         this.instrument.triggerAttack(note, trigger, retrigger, velocity)
       }
     } catch(e) {
@@ -55,7 +55,7 @@ class Interface{
       if(this.instrument.triggeredNotes.length > 0 || force == true){
         this.instrument.triggerRelease(note)
         $(this.id+" [note='"+note+"']")
-          .css("background-color", this.colorPaletteOff[NoteInterval(note)])
+          .css("background-color", this.colorPaletteOff[NoteInterval(note.replace(/\d+/g, ''))])
       }
     } catch(e){
       console.log(e)
@@ -86,7 +86,7 @@ class Interface{
       let note = $(event.currentTarget).attr("note")
       this.noteLeave(note)
       $(this.id+" [note='"+note+"']")
-        .css("background-color", this.colorPaletteOff[NoteInterval(note)])
+        .css("background-color", this.colorPaletteOff[NoteInterval(note.replace(/\d+/g, ''))])
     })
 
     // Safety all note off when releasing the pointer on the header bar

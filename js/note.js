@@ -63,7 +63,6 @@ function NoteTokenize(noteName){
 /*****************************************************************************/
 function NoteInterval(note, tonic = "C"){
   let tonicIndex
-  note = NoteTokenize(note)[0]
   if (SHARPS.includes(tonic)) tonicIndex = SHARPS.indexOf(tonic)
   else if (FLATS.includes(tonic)) tonicIndex = FLATS.indexOf(tonic)
   else tonicIndex = 0
