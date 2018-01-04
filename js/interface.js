@@ -5,7 +5,7 @@ class Interface{
     this.id = "#"+socket.id
     this.parent = parent || "#interface"
     this.remoteInstruments = new Object()
-    this.setPalette()
+    this.setPalette(0.5,128,127,12,40)
     if (jam) this.setupJam(jam)
   }
 
@@ -15,12 +15,10 @@ class Interface{
     this.bindKeyboard()
   }
 
-  setPalette(frequency, center, width, len){
-    frequency = frequency || 0.52
-    center = center || 128
-    width = width || 127
-    len = len || 12
-    this.colorPalette = makeColorPalette(frequency, center, width, len)
+  setPalette(frequency, center, width, len, off){
+    off = off || 20
+    this.colorPaletteOn = makeColorPalette(frequency, center, width, len)
+    this.colorPaletteOff = makeColorPalette(frequency, center+off, width-off, len)
   }
 
   setupJam(jam){
@@ -42,7 +40,9 @@ class Interface{
   noteOn(note, trigger = true, retrigger = false, velocity = 1){
     try{
       if (this.instrument.polyphony == 1 || this.instrument.triggeredNotes.length < this.instrument.polyphony){
-        if (this.instrument.triggeredNotes.length > 0 || trigger === true) $(this.id+" [note='"+note+"']").addClass("o-1")
+        if (this.instrument.triggeredNotes.length > 0 || trigger === true)
+          $(this.id+" [note='"+note+"']")
+            .css("background-color", this.colorPaletteOn[NoteInterval(note)])
         this.instrument.triggerAttack(note, trigger, retrigger, velocity)
       }
     } catch(e) {
@@ -52,10 +52,10 @@ class Interface{
 
   noteOff(note, force = false){
     try{
-      let select = this.id+" > [note='"+note+"'] .o-1"
       if(this.instrument.triggeredNotes.length > 0 || force == true){
         this.instrument.triggerRelease(note)
-        $(this.id+" [note='"+note+"']").removeClass("o-1")
+        $(this.id+" [note='"+note+"']")
+          .css("background-color", this.colorPaletteOff[NoteInterval(note)])
       }
     } catch(e){
       console.log(e)
@@ -85,13 +85,16 @@ class Interface{
     $(this.id+" [trigger=true]").on('pointerleave', (event) => {
       let note = $(event.currentTarget).attr("note")
       this.noteLeave(note)
-      $(this.id+" [note='"+note+"']").removeClass("o-1")
+      $(this.id+" [note='"+note+"']")
+        .css("background-color", this.colorPaletteOff[NoteInterval(note)])
     })
 
     // Safety all note off when releasing the pointer on the header bar
     $("#header").on('pointerup', () => {
       this.instrument.releaseAll()
-      $(this.id+" [trigger=true]").removeClass("o-1")
+//      $(this.id+" [trigger=true]")
+//        .css("background-color", this.colorPaletteOn[NoteInterval(note)])
+//        .attr({"on": off})
     })
   }
 
@@ -152,7 +155,7 @@ class PadsInterface extends Interface{
                this.scale.intervals.indexOf(interval)==this.scale.intervals.length-1)
                ? " repeat" : "")
              )
-            .css("background-color", this.colorPalette[noteNumber])
+            .css("background-color", this.colorPaletteOff[noteNumber])
             .attr({
                 "note": noteName,
                 "trigger": true,
@@ -162,7 +165,6 @@ class PadsInterface extends Interface{
               $("<div/>")
                 .text(this.jam.global.showNotes ? noteName : "")
                 .addClass("pad-note")
-                .attr({"note": noteName})
             )
           )
       })

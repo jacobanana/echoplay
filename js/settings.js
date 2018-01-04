@@ -16,10 +16,10 @@ function makeColorPalette(frequency,
     return String(nybHexString.substr((n >> 4) & 0x0F,1)) + nybHexString.substr(n & 0x0F,1);
   }
 
-  if (frequency == undefined) frequency = .3;
-  if (center == undefined)   center = 128;
-  if (width == undefined)    width = 127;
-  if (len == undefined)      len = 12;
+  frequency = frequency || 0.52
+  center = center || 128
+  width = width || 127
+  len = len || 12
 
   let palette = new Array()
   for (var i = 0; i < len; ++i)
@@ -62,6 +62,13 @@ const KEYS_PAD = [
   "2", "3", "4", "5", "6", "7", "8", "9"
 ]
 
+const INSTRUMENTS = {
+  "Monophonic Sine": "mono_sine.json",
+  "Monophonic Simple Square": "mono_square.json",
+  "Monophonic Square Synth": "mono_synth_square.json",
+  "Polyphonic Sine": "poly_sine.json",
+  "Polyphonic Square": "poly_square.json"
+}
 
 class EchoPlay{
   constructor(parent){
@@ -111,10 +118,9 @@ class EchoPlay{
       console.log("players received")
       players.forEach(player => {
         console.log("player:", player)
-        if (player != this.socket.id && this.players.indexOf(player)==-1) {
-          console.log("i'm new!!")
+        if (this.players.indexOf(player)==-1) {
           this.players.push(player)
-          this.interface.addPlayer(player)
+          if (player != this.socket.id) this.interface.addPlayer(player)
         }
       })
       if (this.displaySettings == true) this.renderSettings()
@@ -147,12 +153,20 @@ class EchoPlay{
     $(this.parent).html("<div id='settings'> \
       <h1>Settings</h1> \
       <h2>Jammers</h2> \
-      <ul id='jammers'/> \
-      <h2>We're jamming in</h2> \
+      <div id='jammers'/> \
+      <h2>We're jamming in:</h2> \
       <p>"+this.jam.global.rootNote+" "+this.jam.global.scale+"</p> \
     </div>")
+
     this.players.forEach(player => {
-      $("#jammers").append("<li>"+player+"</li>")
+      $("#jammers").append(
+        $("<div/>")
+          .attr({"player_id": player})
+          .text(player)
+          .click(() => {
+            this.jam.local.playRemote = !this.jam.local.playRemote;
+          })
+      )
     })
   }
 

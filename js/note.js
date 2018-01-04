@@ -63,13 +63,17 @@ function NoteTokenize(noteName){
 /*****************************************************************************/
 function NoteInterval(note, tonic = "C"){
   let tonicIndex
+  note = NoteTokenize(note)[0]
   if (SHARPS.includes(tonic)) tonicIndex = SHARPS.indexOf(tonic)
   else if (FLATS.includes(tonic)) tonicIndex = FLATS.indexOf(tonic)
-  else return null
+  else tonicIndex = 0
 
   if (SHARPS.includes(note)) return SHARPS.rotate(tonicIndex).indexOf(note)
   else if (FLATS.includes(note)) return FLATS.rotate(tonicIndex).indexOf(note)
-  else return null
+  else {
+    console.log(note, tonicIndex)
+    return null
+  }
 }
 
 
