@@ -1,6 +1,3 @@
-/* Fastest latency on non mobile devices */
-if (!isMobile()) Tone.context.latencyHint = "fastest";
-
 /* Colors */
 
 function makeColorPalette(frequency,
@@ -63,11 +60,11 @@ const KEYS_PAD = [
 ]
 
 const INSTRUMENTS = {
-  "Monophonic Sine": "mono_sine.json",
-  "Monophonic Simple Square": "mono_square.json",
-  "Monophonic Square Synth": "mono_synth_square.json",
-  "Polyphonic Sine": "poly_sine.json",
-  "Polyphonic Square": "poly_square.json"
+  "Monophonic Sine": "mono_sine",
+  "Monophonic Simple Square": "mono_square",
+  "Monophonic Square Synth": "mono_synth_square",
+  "Polyphonic Sine": "poly_sine",
+  "Polyphonic Square": "poly_square"
 }
 
 class EchoPlay{
@@ -79,8 +76,7 @@ class EchoPlay{
         maestro: true,
         rootOctave: 3,
         octaveRange: 2,
-        instrumentPreset: "poly_sine",
-        playRemote: true,
+        instrumentPreset: Object.values(INSTRUMENTS)[Math.floor(Math.random() * Object.values(INSTRUMENTS).length)],
       },
       global: {
         rootNote: ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][Math.floor(Math.random() * 12)],
@@ -88,9 +84,11 @@ class EchoPlay{
         showNotes: true,
       }
     }
-    this.players = []
+    this.players = new Object()
     this.socket.on('connect', () => {
-      this.interface = new PadsInterface(this.parent, null, this.socket)
+      this.socket.emit("instrument_preset", this.jam.local.instrumentPreset)
+      this.addPlayer(this.socket.id, this.socket, true, this.jam.local.instrumentPreset)
+      this.interface = new PadsInterface(this.parent, this.socket, this.players)
       this.setupSocket()
       this.socket.emit("get_players")
     })
@@ -114,30 +112,36 @@ class EchoPlay{
       this.render()
     })
 
-    this.socket.on("players", players => {
+    this.socket.on("players", (players, presets) => {
       console.log("players received")
+      console.log(presets)
       players.forEach(player => {
-        console.log("player:", player)
-        if (this.players.indexOf(player)==-1) {
-          this.players.push(player)
-          if (player != this.socket.id) this.interface.addPlayer(player)
+        console.log("player:", player, presets[player])
+        if (Object.keys(this.players).indexOf(player)==-1) {
+          this.addPlayer(player, this.socket, false, presets[player])
         }
       })
       if (this.displaySettings == true) this.renderSettings()
     })
 
-    this.socket.on("add_player", player => {
-      console.log("add player:", player)
-      this.players.push(player)
-      this.interface.addPlayer(player)
+    this.socket.on("add_player", (player, preset) => {
+      console.log("add player:", player, preset)
+      this.addPlayer(player, this.socket, false, preset)
       if (this.displaySettings == true) this.renderSettings()
     })
 
     this.socket.on("remove_player", player => {
       console.log("remove player:", player)
-      this.players.remove(player)
-      this.interface.removePlayer(player)
+      this.removePlayer(player)
       if (this.displaySettings == true) this.renderSettings()
+    })
+
+    this.socket.on("load_instrument", (id, preset) => {
+      console.log("load_instrument", id, preset, id==this.socket.id)
+      if (this.players[id]) {
+        console.log("loading preset")
+        this.players[id].instrument.loadPreset(preset)
+      }
     })
 
     this.socket.emit("request_jam")
@@ -158,13 +162,13 @@ class EchoPlay{
       <p>"+this.jam.global.rootNote+" "+this.jam.global.scale+"</p> \
     </div>")
 
-    this.players.forEach(player => {
+    Object.keys(this.players).forEach(player => {
       $("#jammers").append(
         $("<div/>")
           .attr({"player_id": player})
           .text(player)
           .click(() => {
-            this.jam.local.playRemote = !this.jam.local.playRemote;
+            player.play = !player.play
           })
       )
     })
@@ -208,9 +212,29 @@ class EchoPlay{
     this.jam.global.scale = scaleName
     this.socket.emit("update_jam", this.jam.global)
   }
+
+  addPlayer(id, socket, local, preset){
+    socket = self.socket || socket
+    local = local || false
+    this.players[id] = {
+      "instrument": new Instrument(preset, socket, local),
+      "play": true
+    }
+    if (local === false) this.interface.addPlayer(id)
+  }
+
+  removePlayer(id){
+    this.interface.removePlayer(id)
+    try{ this.players[id].instrument.inst.dispose(); console.log("disposed of instrument "+id) } catch(e) { console.log(e) }
+    delete this.players[id]
+  }
+
 }
 
 $(document).ready(function() {
+  /* Fastest latency */
+  Tone.context.latencyHint = "fastest";
+
   echoplay = new EchoPlay()
 
   /* KEYBOARD SHORTCUTS for EchoPlay */
@@ -224,7 +248,7 @@ $(document).ready(function() {
     "alt+g": function() { echoplay.setRootNote('G') },
     "alt+right": function() {
       if (echoplay.jam.global.rootNote == 'B'){
-        echoplay.setRootOctave(echoplay.jam.local.rootOctave+1)
+        echoplay.setRootOctave(echoplay.jam.local.rootOctave+1, true)
       }
       echoplay.setRootNote(SHARPS[(SHARPS.indexOf(echoplay.jam.global.rootNote)+1)%SHARPS.length])
     },
@@ -232,7 +256,7 @@ $(document).ready(function() {
       let nextNote
 
       if (echoplay.jam.global.rootNote == 'C'){
-        echoplay.setRootOctave(echoplay.jam.local.rootOctave-1)
+        echoplay.setRootOctave(echoplay.jam.local.rootOctave-1, true)
         nextNote = 'B'
       }
       else{ nextNote = SHARPS[(SHARPS.indexOf(echoplay.jam.global.rootNote)-1)%SHARPS.length] }
@@ -281,8 +305,6 @@ $(document).ready(function() {
     "meta+shift+down": function() { echoplay.setOctaveRange(echoplay.jam.local.octaveRange-1) },
     "mod+.": function() { echoplay.interface.instrument.volumeUp() },
     "mod+,": function() { echoplay.interface.instrument.volumeDown() },
-    "mod+p": function() { echoplay.jam.local.playRemote = true },
-    "mod+shift+p": function() { echoplay.jam.local.playRemote = false },
     "f1": function() { toggleFullScreen() },
   }
 

@@ -70,9 +70,17 @@
 
       $.getMultiScripts(vendorScripts).done(function() {
         console.log("loaded vendor scripts")
-        if (isElectron() == true) Tone = require("tone");
-        else $.getScript("js/tone/Tone.min.js")
-        $.getMultiScripts(scripts).done(function() { console.log("echoplay ready to jam") })
+        if (isElectron() == true) {
+          Tone = require("tone");
+          $.getMultiScripts(scripts).done(function() { console.log("echoplay ready to jam") })
+        }
+        else {
+          $.getScript("js/tone/Tone.min.js")
+          .then(() => {
+            $.getMultiScripts(scripts).done(function() { console.log("echoplay ready to jam") })
+          })
+        }
+
        })
     })
     </script>

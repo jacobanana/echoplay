@@ -43,6 +43,7 @@ class EchoPlayServer{
       scale: ["major", "minor", "minor_harmonic", "gipsy"][Math.floor(Math.random() * 4)],
       showNotes: true,
     }
+    this.instrumentPresets = new Object()
   }
 
   serveStatic(){
@@ -61,20 +62,29 @@ class EchoPlayServer{
       io.emit('url', this.url)
 
       socket.on('get_players', () => {
+        console.log(this.instrumentPresets)
         io.clients((error, clients) => {
           if (error) throw error;
-          socket.emit('players', clients);
+          socket.emit('players', clients, this.instrumentPresets);
           console.log("Current clients:", clients);
+          console.log("Instruments", this.instrumentPresets)
         })
       })
 
       socket.broadcast.emit('add_player', socket.id)
       socket.on('disconnect', (data) => {
+        delete this.instrumentPresets[socket.id]
         socket.broadcast.emit('remove_player', socket.id)
       })
 
       socket.on("request_jam", () => {
         socket.emit("new_jam", this.jamSettings)
+      })
+
+      socket.on("instrument_preset", (preset) => {
+        console.log("instrument_preset", preset)
+        this.instrumentPresets[socket.id] = preset
+        socket.broadcast.emit("load_instrument", socket.id, preset)
       })
 
       socket.on("update_jam", (jam) => {

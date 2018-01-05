@@ -1,12 +1,12 @@
 /* Scaled PAD like interface */
 class Interface{
-  constructor(parent, jam, socket){
+  constructor(parent, socket, players){
     this.socket = socket
     this.id = "#"+socket.id
+    this.players = players
+    this.instrument = this.players[socket.id].instrument
     this.parent = parent || "#interface"
-    this.remoteInstruments = new Object()
     this.setPalette(0.5,128,127,12,40)
-    if (jam) this.setupJam(jam)
   }
 
   buildAndBindAll(){
@@ -24,17 +24,7 @@ class Interface{
   setupJam(jam){
     this.jam = jam
     this.scale = buildScale(this.jam.global.scale, this.jam.local.octaveRange)
-    this.loadInstrument()
     this.buildAndBindAll()
-  }
-
-  /* Instrument & note triggers */
-  loadInstrument(preset){
-    preset = preset || this.jam.local.instrumentPreset
-    if (this.instrument && preset!=this.instrument.name){
-      if (this.instrument.inst) try { this.instrument.inst.dispose(); console.log('instrument disposed') } catch(e) {}
-    }
-    this.instrument = new Instrument(this.socket, preset)
   }
 
   noteOn(note, trigger = true, retrigger = false, velocity = 1){
@@ -54,12 +44,13 @@ class Interface{
     try{
       if(this.instrument.triggeredNotes.length > 0 || force == true){
         this.instrument.triggerRelease(note)
-        $(this.id+" [note='"+note+"']")
-          .css("background-color", this.colorPaletteOff[NoteInterval(note.replace(/\d+/g, ''))])
       }
     } catch(e){
       console.log(e)
     }
+    $(this.id+" [note='"+note+"']")
+      .css("background-color", this.colorPaletteOff[NoteInterval(note.replace(/\d+/g, ''))])
+
   }
 
   noteLeave(note){
@@ -106,8 +97,10 @@ class Interface{
     this.socket.on("note_on", data => {
       $(this.id+" [note='"+data.note+"'] > [client_id="+data.id+"]").addClass("o-1")
       try{
-        if (this.jam.local.playRemote == true && this.remoteInstruments[data.id].inst)
-        { this.remoteInstruments[data.id].inst.triggerAttack(data.note) }
+        if (this.players[data.id].play == true && this.players[data.id].instrument)
+        {
+          this.players[data.id].instrument.triggerAttack(data.note, true, false)
+        }
       } catch(e){
         console.log(e)
       }
@@ -115,8 +108,8 @@ class Interface{
     this.socket.on("note_off", data => {
       $(this.id+" [note='"+data.note+"'] > [client_id="+data.id+"]").removeClass("o-1")
       try{
-        if (this.jam.local.playRemote == true && this.remoteInstruments[data.id].inst) {
-          this.remoteInstruments[data.id].inst.triggerRelease(data.note)
+        if (this.players[data.id].play && this.players[data.id].instrument) {
+          this.players[data.id].instrument.triggerRelease(data.note)
         }
       } catch(e) {
         console.log(e)
@@ -128,15 +121,6 @@ class Interface{
 
     // Server has dropped..
     this.socket.on("disconnect", () => { this.removeAllPlayers(); alert("Server disconnected... you are now playing by yourself") })
-  }
-
-  deleteRemoteInstrument(id){
-    try{ this.remoteInstruments[id].dispose() } catch(e) {}
-    delete this.remoteInstruments[id]
-  }
-
-  addRemoteInstrument(id){
-    this.remoteInstruments[id] = new Instrument(this.socket, "poly_square")
   }
 }
 
@@ -168,7 +152,7 @@ class PadsInterface extends Interface{
             )
           )
       })
-      Object.keys(this.remoteInstruments).forEach(id => {
+      Object.keys(this.players).forEach(id => {
         $(this.id+" [trigger=true]").append(
           $("<div/>")
             .attr({client_id: id})
@@ -179,28 +163,21 @@ class PadsInterface extends Interface{
 
   /* ADD ANOTHER PLAYER */
   addPlayer(id){
-    if (Object.keys(this.remoteInstruments).indexOf(id) == -1){
-      $(this.id+" [trigger=true]").append(
-        $("<div/>")
-          .attr({client_id: id})
-          .addClass("mini-pad")
-      )
-      this.addRemoteInstrument(id)
-    }
+    $(this.id+" [trigger=true]").append(
+      $("<div/>")
+        .attr({client_id: id})
+        .addClass("mini-pad")
+    )
   }
 
   /* REMOVE ANOTHER PLAYER */
   removePlayer(id){
     $(this.id+" [client_id="+id+"]").remove()
-    this.deleteRemoteInstrument(id)
   }
 
   /* REMOVE ALL OTHER PLAYERS */
   removeAllPlayers(){
     console.log("remove all players..")
-    Object.keys(this.remoteInstruments).forEach(player => {
-      this.deleteRemoteInstrument(id)
-    })
     $(this.id+" .mini-pad").remove()
   }
 
