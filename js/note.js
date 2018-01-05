@@ -17,6 +17,10 @@ Array.prototype.remove = function(element){
     return this;
 }
 
+Array.prototype.last = function(){
+    return this[this.length - 1];
+};
+
 /*****************************************************************************/
 /* Note.names
 /*****************************************************************************/

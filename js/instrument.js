@@ -32,9 +32,9 @@ class Instrument{
       if (this.polyphony == 1){
         if (this.triggeredNotes.length > 0 || trigger === true){
           this.inst.triggerAttack(note, null, velocity)
+          if (this.triggeredNotes.indexOf(note) == -1 && retrigger == false) this.triggeredNotes.push(note)
           if (this.local === true) this.socket.emit("note_on", note)
         }
-        if (trigger === true) this.triggeredNotes.push(note)
       } else {
         if (trigger === true || (retrigger === true && this.triggeredNotes.length > 0)){
           if (retrigger !== true) this.triggeredNotes.push(note)
@@ -48,8 +48,9 @@ class Instrument{
   triggerRelease(note){
     if (this.inst){
       if (this.monophonic == true){
-        if (this.triggeredNotes.length > 0) this.triggeredNotes.length = 0
+        this.triggeredNotes.remove(note)
         if (this.triggeredNotes.length == 0) this.inst.triggerRelease()
+        else { this.triggerAttack(this.triggeredNotes.last()) }
       } else {
         if (this.triggeredNotes.length > 0) this.triggeredNotes.remove(note)
         this.inst.triggerRelease(note)

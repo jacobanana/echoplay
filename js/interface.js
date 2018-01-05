@@ -31,8 +31,8 @@ class Interface{
     try{
       if (this.instrument.polyphony == 1 || this.instrument.triggeredNotes.length < this.instrument.polyphony){
         if (this.instrument.triggeredNotes.length > 0 || trigger === true)
-          $(this.id+" [note='"+note+"']")
-            .css("background-color", this.colorPaletteOn[NoteInterval(note.replace(/\d+/g, ''))])
+        $(this.id+" [note='"+note+"']")
+          .css("background-color", this.colorPaletteOn[NoteInterval(note.replace(/\d+/g, ''))])
         this.instrument.triggerAttack(note, trigger, retrigger, velocity)
       }
     } catch(e) {
