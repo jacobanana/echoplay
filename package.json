@@ -1,6 +1,6 @@
 {
   "name": "echoplay-server",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "EchoPlay messaging server",
   "main": "EchoPlayServer.js",
   "scripts": {
