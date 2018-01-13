@@ -166,10 +166,15 @@ class EchoPlay{
       $("#jammers").append(
         $("<div/>")
           .attr({"player_id": player})
-          .text(player)
-          .click(() => {
-            player.play = !player.play
+          .click((e) => {
+            this.players[player].play = !this.players[player].play
+            if (this.players[player].play == true){
+              $(e.target).css('color', '#00FF00')
+            } else {
+              $(e.target).css('color', '#FF0000')
+            }
           })
+          .text(player+" / "+this.players[player].instrument.name+" / "+this.players[player].play)
       )
     })
   }
