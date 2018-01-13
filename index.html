@@ -42,11 +42,9 @@
         var _arr = $.map(arr, function(scr) {
             return $.getScript( (path||"") + scr );
         });
-
         _arr.push($.Deferred(function( deferred ){
             $( deferred.resolve );
         }));
-
         return $.when.apply($, _arr);
     }
 
@@ -59,26 +57,14 @@
         'js/qrcode/qrcode.min.js',
         'js/vendor/startaudiocontext.js',
       ]
-      let scripts = [
-        'js/mobile.js',
-        'js/note.js',
-        'js/instrument.js',
-        'js/interface.js',
-        'js/echoplay.js',
-        'js/midi.js'
-      ]
-
       $.getMultiScripts(vendorScripts).done(function() {
-        console.log("loaded vendor scripts")
         if (isElectron() == true) {
           Tone = require("tone");
-          $.getMultiScripts(scripts).done(function() { console.log("echoplay ready to jam") })
+          $.getScript("app.js/app.echoplay.min.js")
         }
         else {
-          $.getScript("js/tone/Tone.min.js")
-          .then(() => {
-            $.getMultiScripts(scripts).done(function() { console.log("echoplay ready to jam") })
-          })
+          $.getScript("js/tone/Tone.min.js").then(() => {
+          $.getScript("app.js/app.echoplay.min.js") })
         }
 
        })

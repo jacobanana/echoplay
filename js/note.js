@@ -162,7 +162,7 @@ function buildScale(scale, octaveRange = 1){
     scaleDefinition.push(12)
     repeat.push(scaleDefinition.length)
   }
-  for (i = 0; i<totalNumberOfNotes; i++){
+  for (let i = 0; i<totalNumberOfNotes; i++){
     scaleIntervals.push(scaleDefinition[i%scaleDefinition.length] + parseInt(i/scaleDefinition.length) * 12)
   }
   return {
