@@ -60,11 +60,11 @@
       $.getMultiScripts(vendorScripts).done(function() {
         if (isElectron() == true) {
           Tone = require("tone");
-          $.getScript("app.js/app.echoplay.min.js")
+          $.getScript("js/app.echoplay.min.js")
         }
         else {
           $.getScript("js/tone/Tone.min.js").then(() => {
-          $.getScript("app.js/app.echoplay.min.js") })
+          $.getScript("js/app.echoplay.min.js") })
         }
 
        })
