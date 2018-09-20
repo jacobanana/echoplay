@@ -59,12 +59,20 @@ const KEYS_PAD = [
   "2", "3", "4", "5", "6", "7", "8", "9"
 ]
 
+const ACCESSIBLE_KEYS = {
+  "space": "a",
+  "enter": "d",
+  "tab": "g",
+  "shift+tab": "j",
+  "backspace": "k"
+}
+
 const INSTRUMENTS = {
-  "Monophonic Sine": "mono_sine",
-  "Monophonic Simple Square": "mono_square",
-  "Monophonic Square Synth": "mono_synth_square",
+  //"Monophonic Sine": "mono_sine",
+  //"Monophonic Simple Square": "mono_square",
+  //"Monophonic Square Synth": "mono_synth_square",
   "Polyphonic Sine": "poly_sine",
-  "Polyphonic Square": "poly_square"
+  //"Polyphonic Square": "poly_square"
 }
 
 class EchoPlay{
@@ -316,4 +324,5 @@ $(document).ready(function() {
   Mousetrap.bind(LOCAL_SHORTCUTS)
   if (echoplay.jam.local.maestro === true) Mousetrap.bind(MAESTRO_SHORTCUTS)
   $("h1").click(function(){ echoplay.toggleSettings() })
+
 })

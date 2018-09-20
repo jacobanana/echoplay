@@ -63,6 +63,19 @@ When another player joins the jam, his notes will be displayed in real time on t
 | `alt` + `shift` + `down` | remove 1 octave to the range of the interface (applies globally) |
 | `F1` | show full screen |
 
+### Accessibility
+In order to help accessibility of this application, the following shortcuts have been added.
+
+| Shortcut | Action |
+| -------- | ------ |
+| `space` | root note |
+| `enter` | third |
+| `tab` | fifth |
+| `shift+tab` | seventh |
+| `backspace` | octave |
+
+This is designed to be used with devices such as the Don Johnston Switch Interface for example.
+
 ## Usage
 1. Pull repository locally
 2. Install dependencies with `npm install`

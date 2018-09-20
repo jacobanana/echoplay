@@ -5,7 +5,7 @@ var gulp = require('gulp')
 , concat = require("gulp-concat");
 
 // Build minified javascript
-gulp.task('build-js', function () {
+gulp.task('default', function () {
   let scripts = [
     'js/mobile.js',
     'js/note.js',

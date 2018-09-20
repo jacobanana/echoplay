@@ -7,10 +7,10 @@
       "type"    : "sine"
     },
     "envelope"  : {
-      "attack"  : 0.05,
+      "attack"  : 0.1,
       "decay"   : 0.2,
       "sustain" : 0.8,
-      "release" : 0.25
+      "release" : 5
     }
   }
 }

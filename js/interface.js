@@ -193,9 +193,28 @@ class PadsInterface extends Interface{
     this.unbindKeyboard()
     $(this.id+" [trigger=true]").each((note, element) => {
       Mousetrap.bind(KEYS_PAD[note], (event) => {
-        if (event.repeat == false) this.noteOn($(element).attr('note'))
+        if (event.repeat == false || event.repeat === undefined) this.noteOn($(element).attr('note'))
       }, 'keydown')
       Mousetrap.bind(KEYS_PAD[note], () => { this.noteOff($(element).attr('note')) }, 'keyup')
     })
+
+
+    Object.keys(ACCESSIBLE_KEYS).forEach((key)=>{
+
+      Mousetrap.bind(key, (event) => {
+        if (event.preventDefault) {
+            event.preventDefault();
+        } else {
+            // internet explorer
+            event.returnValue = false;
+        }
+        if (event.repeat == false) {
+          Mousetrap.trigger(ACCESSIBLE_KEYS[key], 'keydown')
+        }
+      }, 'keydown')
+      Mousetrap.bind(key, () => { Mousetrap.trigger(ACCESSIBLE_KEYS[key], 'keyup') }, 'keyup')
+
+    })
+
   }
 }
