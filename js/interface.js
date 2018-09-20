@@ -30,10 +30,13 @@ class Interface{
   noteOn(note, trigger = true, retrigger = false, velocity = 1){
     try{
       if (this.instrument.polyphony == 1 || this.instrument.triggeredNotes.length < this.instrument.polyphony){
-        if (this.instrument.triggeredNotes.length > 0 || trigger === true)
-        $(this.id+" [note='"+note+"']")
-          .css("background-color", this.colorPaletteOn[NoteInterval(note.replace(/\d+/g, ''))])
-        this.instrument.triggerAttack(note, trigger, retrigger, velocity)
+        if (this.instrument.triggeredNotes.length > 0 || trigger === true){
+          if (this.scale.intervals.indexOf(NoteInterval(NoteTokenize(note)[0], this.jam.global.rootNote)) != -1){
+            $(this.id+" [note='"+note+"']")
+              .css("background-color", this.colorPaletteOn[NoteInterval(note.replace(/\d+/g, ''))])
+            this.instrument.triggerAttack(note, trigger, retrigger, velocity)
+          }
+        }
       }
     } catch(e) {
       console.log(e)
