@@ -1,4 +1,4 @@
-# echoplay-server
+# echoplay
 
 ## What is echo*play*?
 EchoPlay is a simple application to help children learn music and play together.
