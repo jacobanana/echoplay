@@ -1,7 +1,4 @@
 # echoplay-server
-EchoPlay Node.js web messaging server
-
-[Join the jam & try it here](http://echoplayapp.2vu3fhpm33.eu-west-2.elasticbeanstalk.com/)
 
 ## What is echo*play*?
 EchoPlay is a simple application to help children learn music and play together.
