@@ -242,7 +242,7 @@ class EchoPlay{
 
 }
 
-$(document).ready(function() {
+$(function() {
   /* Fastest latency */
   Tone.context.latencyHint = "fastest";
 
@@ -321,6 +321,7 @@ $(document).ready(function() {
 
   Mousetrap.bind(LOCAL_SHORTCUTS)
   if (echoplay.jam.local.maestro === true) Mousetrap.bind(MAESTRO_SHORTCUTS)
-  $("h1").click(function(){ echoplay.toggleSettings() })
+  $("h1").on('click', function(){ echoplay.toggleSettings() })
+  $("#jam").on('click', function(){ toggleFullScreen() })
 
 })
