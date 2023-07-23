@@ -1,6 +1,6 @@
 {
   "name": "echoplay",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "EchoPlay - learn and play music together",
   "repository": {
     "type": "git",
@@ -10,10 +10,20 @@
   "scripts": {
     "start": "gulp && electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "node echoplay-server/server.js"
+    "server": "node echoplay-server/server.js",
+    "build": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
   },
+  
   "author": "Adrien Fauconnet",
   "license": "ISC",
+  "build": {
+    "appId": "com.echoplay",
+    "mac": {
+      "category": "echoplay.music",
+      "target": "dmg"
+    }
+  },
   "dependencies": {
     "bonjour": "^3.5.0",
     "express": "^4.16.2",
@@ -26,6 +36,7 @@
   },
   "devDependencies": {
     "electron": "^25.3.1",
+    "electron-builder": "^24.4.0",
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-uglify": "^3.0.2"
