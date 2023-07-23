@@ -77,6 +77,6 @@ This is designed to be used with devices such as the Don Johnston Switch Interfa
 
 ## Usage
 1. Pull repository locally
-2. Install dependencies with `npm install`
-3. Run the app with `npm start`
+2. Install dependencies with `yarn install`
+3. Run the app with `yarn start`
 4. Players on the local network can join the jam by opening their web browser at the address displayed in the app
