@@ -8,6 +8,10 @@ When another player joins the jam, his notes will be displayed in real time on t
 
 ![echoplay colourful grid](docs/echoplay.png)
 
+## How does it work?
+
+Open the app on a computer. At the top of the display, there will be an address at which other players can join from any web browser, being on a computer, a tablet or a phone. The only requirement is that other devices are on the same local network.
+
 ## Keyboard shortcuts
 ### Set root note
 | Shortcut | Action |
