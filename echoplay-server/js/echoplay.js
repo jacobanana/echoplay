@@ -76,7 +76,8 @@ const INSTRUMENTS = {
 }
 
 class EchoPlay{
-  constructor(parent){
+  constructor(context, parent){
+    this.context = context
     this.socket = io.connect()
     this.parent = parent || "#interface"
     this.jam = {
@@ -96,7 +97,7 @@ class EchoPlay{
     this.socket.on('connect', () => {
       this.socket.emit("instrument_preset", this.jam.local.instrumentPreset)
       this.addPlayer(this.socket.id, this.socket, true, this.jam.local.instrumentPreset)
-      this.interface = new PadsInterface(this.parent, this.socket, this.players)
+      this.interface = new PadsInterface(this.parent, this.socket, this.players, this.context)
       this.setupSocket()
       this.socket.emit("get_players")
     })
@@ -245,7 +246,7 @@ $(document).ready(function() {
   /* Fastest latency */
   Tone.context.latencyHint = "fastest";
 
-  echoplay = new EchoPlay()
+  echoplay = new EchoPlay(Tone.context)
 
   /* KEYBOARD SHORTCUTS for EchoPlay */
   const MAESTRO_SHORTCUTS = {

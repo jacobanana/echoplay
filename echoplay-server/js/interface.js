@@ -1,11 +1,12 @@
 /* Scaled PAD like interface */
 class Interface{
-  constructor(parent, socket, players){
+  constructor(parent, socket, players, context){
     this.socket = socket
     this.id = "#"+socket.id
     this.players = players
     this.instrument = this.players[socket.id].instrument
     this.parent = parent || "#interface"
+    this.context = context
     this.setPalette(0.5,128,127,12,40)
   }
 
@@ -25,9 +26,11 @@ class Interface{
     this.jam = jam
     this.scale = buildScale(this.jam.global.scale, this.jam.local.octaveRange)
     this.buildAndBindAll()
+    this.instrument.releaseAll()
   }
 
   noteOn(note, trigger = true, retrigger = false, velocity = 1){
+    if (this.context.state !== "running") return;
     try{
       if (this.instrument.polyphony == 1 || this.instrument.triggeredNotes.length < this.instrument.polyphony){
         if (this.instrument.triggeredNotes.length > 0 || trigger === true){
