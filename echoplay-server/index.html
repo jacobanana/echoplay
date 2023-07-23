@@ -13,9 +13,9 @@
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
       }
 
-      if (isElectron()){
-        window.$ = window.jQuery = require('jquery');
-      }
+      // if (isElectron()){
+      //   window.$ = window.jQuery = require('jquery');
+      // }
     </script>
   </head>
   <body>
@@ -24,7 +24,7 @@
 
     <div id="main">
       <div id="header">
-        <div id="code"><canvas id="qrcode"></canvas></div>
+        <!-- <div id="code"><canvas id="qrcode"></canvas></div> -->
         <div id="jam">
           <p>join the jam @</p>
           <p><strong id="url"></strong></p>
@@ -54,18 +54,13 @@
         'js/mousetrap/mousetrap.min.js',
         'js/mousetrap/plugins/bind-dictionary/mousetrap-bind-dictionary.min.js',
         'socket.io/socket.io.js',
-        'js/qrcode/qrcode.min.js',
+        // 'js/qrcode/qrcode',
         'js/vendor/startaudiocontext.js',
       ]
       $.getMultiScripts(vendorScripts).done(function() {
-        if (isElectron() == true) {
-          Tone = require("tone");
-          $.getScript("js/app.echoplay.min.js")
-        }
-        else {
+
           $.getScript("js/tone/Tone.min.js").then(() => {
           $.getScript("js/app.echoplay.min.js") })
-        }
 
        })
     })

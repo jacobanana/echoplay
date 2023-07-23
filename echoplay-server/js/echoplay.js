@@ -30,10 +30,10 @@ function makeColorPalette(frequency,
 }
 
 /* WINDOW CONTROL */
-if (isElectron()){
-  const { remote } = require('electron');
-  Mousetrap.bind("f12", () => { remote.getCurrentWindow().toggleDevTools() })
-}
+// if (isElectron()){
+//   const { remote } = require('electron');
+//   Mousetrap.bind("f12", () => { remote.getCurrentWindow().toggleDevTools() })
+// }
 
 function toggleFullScreen() {
   var doc = window.document;
@@ -105,10 +105,7 @@ class EchoPlay{
 
   setupSocket(){
     this.socket.on("url", (url) => {
-     QRCode.toCanvas(document.getElementById('qrcode'), url, {scale: 2, color: {light: "#000000ff", dark: "#ffffffff"}}, function (error) {
-       if (error) console.error(error)
-       $("#url").text(url)
-     })
+      $("#url").text(url)
     })
 
     this.socket.on("new_jam", (globalJam) => {

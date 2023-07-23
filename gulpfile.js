@@ -1,24 +1,20 @@
 // including plugins
 var gulp = require('gulp')
 , uglify = require("gulp-uglify")
-, babel  = require("gulp-babel")
 , concat = require("gulp-concat");
 
 // Build minified javascript
 gulp.task('default', function () {
   let scripts = [
-    'js/mobile.js',
-    'js/note.js',
-    'js/instrument.js',
-    'js/interface.js',
-    'js/echoplay.js',
-    'js/midi.js'
+    'echoplay-server/js/mobile.js',
+    'echoplay-server/js/note.js',
+    'echoplay-server/js/instrument.js',
+    'echoplay-server/js/interface.js',
+    'echoplay-server/js/echoplay.js',
+    'echoplay-server/js/midi.js'
   ]
-    gulp.src(scripts)
-    .pipe(babel({
-      presets: ['es2015']
-    }))
+    return gulp.src(scripts)
     .pipe(uglify())
     .pipe(concat('app.echoplay.min.js'))
-    .pipe(gulp.dest('js/'));
+    .pipe(gulp.dest('echoplay-server/js/'));
 });
