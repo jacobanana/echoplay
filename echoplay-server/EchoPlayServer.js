@@ -30,10 +30,10 @@ class EchoPlayServer{
       {url: '/css', path: path.join(__dirname, 'css')},
       {url: '/instruments', path:path.join(__dirname, 'instruments') },
       {url: '/js/jquery', path: path.join(this.appRoot, 'node_modules', 'jquery', 'dist')},
-      {url: '/js/pep', path: path.join(this.appRoot, 'node_modules', 'pepjs', 'dist')},
+      // {url: '/js/pep', path: path.join(this.appRoot, 'node_modules', 'pepjs', 'dist')},
       {url: '/js/tone', path: path.join(this.appRoot, 'node_modules', 'tone', 'build')},
       {url: '/js/mousetrap', path: path.join(this.appRoot, 'node_modules', 'mousetrap')},
-      {url: '/js/qrcode', path: path.join(this.appRoot, 'node_modules', 'qrcode', 'bin')},
+      // {url: '/js/qrcode', path: path.join(this.appRoot, 'node_modules', 'qrcode', 'bin')},
     ]
   }
 
