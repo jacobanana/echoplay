@@ -4,13 +4,14 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var path = require('path')
 var bonjour = require('bonjour')()
+var ip = require('ip')
 
 class EchoPlayServer{
   constructor(appRoot, port, appUrl) {
     this.appRoot = appRoot || __dirname
     this.port = port || 3000
-    this.hostname = require('os').hostname().toLowerCase()
-    this.url = appUrl || "http://"+this.hostname+":"+this.port
+    this.ip = ip.address()
+    this.url = appUrl || "http://"+this.ip+":"+this.port
     this.defaultJamSettings()
     this.defaultEndpoints()
     this.start()
@@ -30,10 +31,8 @@ class EchoPlayServer{
       {url: '/css', path: path.join(__dirname, 'css')},
       {url: '/instruments', path:path.join(__dirname, 'instruments') },
       {url: '/js/jquery', path: path.join(this.appRoot, 'node_modules', 'jquery', 'dist')},
-      // {url: '/js/pep', path: path.join(this.appRoot, 'node_modules', 'pepjs', 'dist')},
       {url: '/js/tone', path: path.join(this.appRoot, 'node_modules', 'tone', 'build')},
       {url: '/js/mousetrap', path: path.join(this.appRoot, 'node_modules', 'mousetrap')},
-      // {url: '/js/qrcode', path: path.join(this.appRoot, 'node_modules', 'qrcode', 'bin')},
     ]
   }
 
