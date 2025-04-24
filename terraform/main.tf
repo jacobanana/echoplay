@@ -2,10 +2,18 @@ provider "aws" {
   region = "eu-west-1"
 }
 
+# VPC Module
+module "vpc" {
+  source           = "./modules/vpc"
+  cidr_block       = "10.0.0.0/16"
+  subnet_cidr_block = "10.0.1.0/24"
+}
+
+# Security Group
 resource "aws_security_group" "echoplay_sg" {
   name        = "echoplay-sg"
-  description = "Allow HTTP, HTTPS, SSH"
-  vpc_id      = "vpc-0874a087a18300bbd" # replace with your VPC ID
+  description = "Allow HTTP and HTTPS"
+  vpc_id      = module.vpc.vpc_id
 
   ingress {
     from_port   = 80
@@ -21,14 +29,6 @@ resource "aws_security_group" "echoplay_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-
   egress {
     from_port   = 0
     to_port     = 0
@@ -37,31 +37,12 @@ resource "aws_security_group" "echoplay_sg" {
   }
 }
 
-resource "aws_instance" "echoplay" {
-  ami                         = "ami-0ce8c2b29fcc8a346" # Amazon Linux 2023 AMI
-  instance_type               = "t3.micro"
-  subnet_id                   = "subnet-058b95c3e314b4cee" # replace with your Subnet ID
-  vpc_security_group_ids      = [aws_security_group.echoplay_sg.id]
-  associate_public_ip_address = true
-  key_name                    = "echoplay-aws"
-
-  user_data = <<-EOF
-                    #!/bin/bash
-                    yum update -y
-                    yum install -y docker
-                    systemctl enable docker
-                    systemctl start docker
-                    usermod -aG docker ec2-user
-                    docker run -d --restart always -p 80:3000 ghcr.io/jacobanana/echoplay:latest
-              EOF
-
-  metadata_options {
-    http_endpoint               = "enabled"
-    http_tokens                 = "required"
-    http_put_response_hop_limit = 1
-  }
-
-  tags = {
-    Name = "EchoplayInstance"
-  }
+# EC2 Module
+module "ec2" {
+  source            = "./modules/ec2"
+  ami               = "ami-0ce8c2b29fcc8a346"
+  instance_type     = "t3.micro"
+  subnet_id         = module.vpc.subnet_id
+  security_group_id = aws_security_group.echoplay_sg.id
+  key_name          = "echoplay-aws"
 }
