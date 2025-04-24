@@ -16,5 +16,5 @@ gulp.task('default', function () {
     return gulp.src(scripts)
     .pipe(uglify())
     .pipe(concat('app.echoplay.min.js'))
-    .pipe(gulp.dest('build/'));
+    .pipe(gulp.dest('js/'));
 });
