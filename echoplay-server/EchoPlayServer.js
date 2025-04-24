@@ -60,14 +60,12 @@ class EchoPlayServer{
       console.log("New connection:", socket.id)
       io.emit('url', this.url)
 
-      socket.on('get_players', () => {
+      socket.on('get_players', async () => {
         console.log(this.instrumentPresets)
-        io.clients((error, clients) => {
-          if (error) throw error;
-          socket.emit('players', clients, this.instrumentPresets);
-          console.log("Current clients:", clients);
-          console.log("Instruments", this.instrumentPresets)
-        })
+        const clients = Array.from(await io.allSockets());
+        socket.emit('players', clients, this.instrumentPresets);
+        console.log("Current clients:", clients);
+        console.log("Instruments", this.instrumentPresets)
       })
 
       socket.broadcast.emit('add_player', socket.id)
