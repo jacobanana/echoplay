@@ -86,6 +86,8 @@ This is designed to be used with devices such as the Don Johnston Switch Interfa
 4. Players on the local network can join the jam by opening their web browser at the address displayed in the app
 
 
-## Build
+## Usage with Docker
 
-To build the app, run `yarn build`
+```bash
+docker run -d -p 80:3000 ghcr.io/jacobanana/echoplay:latest
+```
