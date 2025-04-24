@@ -36,15 +36,6 @@ class EchoPlayServer{
     ]
   }
 
-  defaultJamSettings(){
-    this.jamSettings = {
-      rootNote: ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][Math.floor(Math.random() * 12)],
-      scale: ["major", "minor", "minor_harmonic", "gipsy"][Math.floor(Math.random() * 4)],
-      showNotes: true,
-    }
-    this.instrumentPresets = new Object()
-  }
-
   serveStatic(){
     app.get('/', (req, res) => { res.sendFile(__dirname + '/index.html') })
     this.endpoints.map(endpoint => { this.addEndpoint(endpoint.url, endpoint.path) })
@@ -54,20 +45,27 @@ class EchoPlayServer{
     app.use(url, express.static(path))
   }
 
+  defaultJamSettings(){
+    this.jamSettings = {
+      rootNote: ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][Math.floor(Math.random() * 12)],
+      scale: ["major", "minor", "minor_harmonic", "gipsy"][Math.floor(Math.random() * 4)],
+      showNotes: true,
+    }
+    this.instrumentPresets = new Object()
+  }
+
   setupSocket(){
     // Socket.io
     io.on('connection', (socket) => {
       console.log("New connection:", socket.id)
       io.emit('url', this.url)
 
-      socket.on('get_players', () => {
+      socket.on('get_players', async () => {
         console.log(this.instrumentPresets)
-        io.clients((error, clients) => {
-          if (error) throw error;
-          socket.emit('players', clients, this.instrumentPresets);
-          console.log("Current clients:", clients);
-          console.log("Instruments", this.instrumentPresets)
-        })
+        const clients = Array.from(await io.allSockets());
+        socket.emit('players', clients, this.instrumentPresets);
+        console.log("Current clients:", clients);
+        console.log("Instruments", this.instrumentPresets)
       })
 
       socket.broadcast.emit('add_player', socket.id)

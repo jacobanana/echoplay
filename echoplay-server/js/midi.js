@@ -25,4 +25,9 @@ function onMIDIFailure(msg) {
   console.log( "Failed to get MIDI access - " + msg );
 }
 
-navigator.requestMIDIAccess().then( onMIDISuccess, onMIDIFailure );
+if (navigator.requestMIDIAccess) {
+  navigator.requestMIDIAccess().then( onMIDISuccess, onMIDIFailure );
+} else {
+  console.warn('Web MIDI API is not supported in this browser.');
+}
+
