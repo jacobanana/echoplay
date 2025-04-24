@@ -36,15 +36,6 @@ class EchoPlayServer{
     ]
   }
 
-  defaultJamSettings(){
-    this.jamSettings = {
-      rootNote: ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][Math.floor(Math.random() * 12)],
-      scale: ["major", "minor", "minor_harmonic", "gipsy"][Math.floor(Math.random() * 4)],
-      showNotes: true,
-    }
-    this.instrumentPresets = new Object()
-  }
-
   serveStatic(){
     app.get('/', (req, res) => { res.sendFile(__dirname + '/index.html') })
     this.endpoints.map(endpoint => { this.addEndpoint(endpoint.url, endpoint.path) })
@@ -52,6 +43,15 @@ class EchoPlayServer{
 
   addEndpoint(url, path){
     app.use(url, express.static(path))
+  }
+
+  defaultJamSettings(){
+    this.jamSettings = {
+      rootNote: ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][Math.floor(Math.random() * 12)],
+      scale: ["major", "minor", "minor_harmonic", "gipsy"][Math.floor(Math.random() * 4)],
+      showNotes: true,
+    }
+    this.instrumentPresets = new Object()
   }
 
   setupSocket(){

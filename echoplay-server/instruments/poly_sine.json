@@ -2,7 +2,7 @@
   "polyphony": 6,
   "instance": "Tone.Synth",
   "options": {
-    "volume"    : -12,
+    "volume"    : -18,
     "oscillator": {
       "type"    : "sine"
     },
