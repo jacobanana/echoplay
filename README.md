@@ -91,3 +91,7 @@ This is designed to be used with devices such as the Don Johnston Switch Interfa
 ```bash
 docker run -d -p 80:3000 ghcr.io/jacobanana/echoplay:latest
 ```
+
+## Infrastructure
+
+[Infrastructure docs](./infrastructure.md)
